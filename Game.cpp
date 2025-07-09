@@ -1,9 +1,19 @@
 #include "GameClass.h"
 
+#include <ctime>
+#include <Windows.h>
+
 
 void initialize() {
+    std::srand(static_cast<unsigned>(time(0)));
+
+    //AllocConsole();
+    //FILE* stream;
+    //freopen_s(&stream, "CONOUT$", "w", stdout);
+    //freopen_s(&stream, "CONOUT$", "w", stderr);
+
     Rocket::Initialize();
-    double r =  GameData::ROCKET_HEIGHT;
+    MoonSurface::Generate();
 }
 
 
@@ -20,6 +30,7 @@ void draw() {
     memset(buffer, 0, SCREEN_HEIGHT * SCREEN_WIDTH * sizeof(uint32_t));
 
     Rocket::Draw();
+    MoonSurface::Draw();
 }
 
 

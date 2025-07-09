@@ -1,10 +1,11 @@
-#include "GameClass.h"
+п»ї#include "GameClass.h"
 
 #include <math.h>
 #include <algorithm>
+#include <iostream>
 
 
-// Рисование линии между двумя точками
+// Р РёСЃРѕРІР°РЅРёРµ Р»РёРЅРёРё РјРµР¶РґСѓ РґРІСѓРјСЏ С‚РѕС‡РєР°РјРё
 void ShapeRenderer::DrawLine(const Vector2& from, const Vector2& to, uint32_t color) {
     double steps = std::max(abs(to.x - from.x), abs(to.y - from.y));
     if (steps == 0) {
@@ -22,7 +23,7 @@ void ShapeRenderer::DrawLine(const Vector2& from, const Vector2& to, uint32_t co
     }
 }
 
-// Рисование треугольника по трем вершинам
+// Р РёСЃРѕРІР°РЅРёРµ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР° РїРѕ С‚СЂРµРј РІРµСЂС€РёРЅР°Рј
 void ShapeRenderer::DrawTriangle(const Vector2& p1, const Vector2& p2, const Vector2& p3, uint32_t color) {
     DrawLine(p1, p2, color);
     DrawLine(p2, p3, color);
@@ -30,7 +31,7 @@ void ShapeRenderer::DrawTriangle(const Vector2& p1, const Vector2& p2, const Vec
     FillTriangle(p1, p2, p3, color);
 }
 
-// Рисование круга с центром в заданной точке и заданным радиусом
+// Р РёСЃРѕРІР°РЅРёРµ РєСЂСѓРіР° СЃ С†РµРЅС‚СЂРѕРј РІ Р·Р°РґР°РЅРЅРѕР№ С‚РѕС‡РєРµ Рё Р·Р°РґР°РЅРЅС‹Рј СЂР°РґРёСѓСЃРѕРј
 void ShapeRenderer::DrawCircle(const Vector2& center, double radius, uint32_t color) {
     for (int y = -radius; y <= radius; y++) {
         for (int x = -radius; x <= radius; x++) {
@@ -45,7 +46,7 @@ void ShapeRenderer::DrawCircle(const Vector2& center, double radius, uint32_t co
     }
 }
 
-// Закрашивание треугольника
+// Р—Р°РєСЂР°С€РёРІР°РЅРёРµ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
 void ShapeRenderer::FillTriangle(const Vector2& p1, const Vector2& p2, const Vector2& p3, uint32_t color) {
     int minX = int(std::min(p1.x, std::min(p2.x, p3.x)));
     int maxX = int(std::max(p1.x, std::max(p2.x, p3.x)));
@@ -63,9 +64,9 @@ void ShapeRenderer::FillTriangle(const Vector2& p1, const Vector2& p2, const Vec
     }
 }
 
-// Проверка точки внутри треугольника 
+// РџСЂРѕРІРµСЂРєР° С‚РѕС‡РєРё РІРЅСѓС‚СЂРё С‚СЂРµСѓРіРѕР»СЊРЅРёРєР° 
 bool ShapeRenderer::IsPointInTriangle(const Vector2& pt, const Vector2& v1, const Vector2& v2, const Vector2& v3) {
-    // Веторное произведение векторов [AB, AC]
+    // Р’РµС‚РѕСЂРЅРѕРµ РїСЂРѕРёР·РІРµРґРµРЅРёРµ РІРµРєС‚РѕСЂРѕРІ [AB, AC]
     auto cross = [](const Vector2& A, const Vector2& B, const Vector2& C) {
         return (B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x);
         };
@@ -81,26 +82,27 @@ bool ShapeRenderer::IsPointInTriangle(const Vector2& pt, const Vector2& v1, cons
 }
 
 
-// Инициализация ракеты
+// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЂР°РєРµС‚С‹
 void Rocket::Initialize() {
     position = Vector2(GameData::START_ROCKET_X, GameData::START_ROCKET_Y);
     direction = Vector2(0, -1);
     velocity = Vector2(0, 0);
     acceleration = Vector2(0, GameData::GRAVITY);
     angle = 0;
+    altitudeAboveMoon = SCREEN_HEIGHT;
 
     flameSize = 0.0;
     thrust = 0;
 }
 
-// Обновление состояния ракеты
+// РћР±РЅРѕРІР»РµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ СЂР°РєРµС‚С‹
 void Rocket::Update(double dt) {
 
     UpdateRotation(dt);
     UpdateThrust(dt);
     ApplyPhysics(dt);
 
-    // Ограничение в пределах экрана
+    // РћРіСЂР°РЅРёС‡РµРЅРёРµ РІ РїСЂРµРґРµР»Р°С… СЌРєСЂР°РЅР°
     if (position.x < GameData::WINDOW_MARGIN_X || position.x > SCREEN_WIDTH - GameData::WINDOW_MARGIN_X) {
         velocity.x = 0.0;
         position.x = std::max(GameData::WINDOW_MARGIN_X,
@@ -111,9 +113,21 @@ void Rocket::Update(double dt) {
         position.y = std::max(GameData::WINDOW_MARGIN_Y,
             std::min(position.y, SCREEN_HEIGHT - GameData::WINDOW_MARGIN_Y));
     }
+	altitudeAboveMoon = MoonSurface::GetAltitudeAboveMoon(position - direction * (GameData::ROCKET_HEIGHT / 2));
+
+    // РљРѕР»Р»РёР·РёСЏ СЃ РїРѕРІРµСЂС…РЅРѕСЃС‚СЊСЋ
+    if (MoonSurface::CheckCollision(position, direction)) {
+        if (altitudeAboveMoon < 1.0 && std::abs(angle) < 1.0) {
+            //std::cout << "Rocket landed successfully!" << std::endl;
+        } else {
+            //std::cout << "Rocket crashed!" << std::endl;
+			//schedule_quit_game();
+        }
+        velocity = Vector2(0, 0);
+    }
 }
 
-// Отрисовка ракеты
+// РћС‚СЂРёСЃРѕРІРєР° СЂР°РєРµС‚С‹
 void Rocket::Draw() {
     DrawRocketBody();
     DrawRocketWindow();
@@ -122,7 +136,7 @@ void Rocket::Draw() {
     }
 }
 
-// Обновление угла поворота ракеты
+// РћР±РЅРѕРІР»РµРЅРёРµ СѓРіР»Р° РїРѕРІРѕСЂРѕС‚Р° СЂР°РєРµС‚С‹
 void Rocket::UpdateRotation(double dt) {
     double rotation = 0.0;
 
@@ -133,37 +147,37 @@ void Rocket::UpdateRotation(double dt) {
         rotation = GameData::ROTATION_SPEED * dt;
     }
     angle += rotation;
-    // Обновляем вектор направления
+    // РћР±РЅРѕРІР»СЏРµРј РІРµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ
     direction.x = sin(angle);
     direction.y = -cos(angle);
 }
 
-// Обновление тяги ракеты
+// РћР±РЅРѕРІР»РµРЅРёРµ С‚СЏРіРё СЂР°РєРµС‚С‹
 void Rocket::UpdateThrust(double dt) {
     int thrustTarget = is_mouse_button_pressed(0) ? 1 : 0;
     thrust += (thrustTarget * GameData::MAX_THRUST - thrust) * GameData::THRUST_SPEED * dt;
     thrust = std::max(0.0, std::min(GameData::MAX_THRUST, thrust));
 
-    // Размер пламени пропорционален тяге
+    // Р Р°Р·РјРµСЂ РїР»Р°РјРµРЅРё РїСЂРѕРїРѕСЂС†РёРѕРЅР°Р»РµРЅ С‚СЏРіРµ
     flameSize = thrust;
 }
 
-// Применение физики к ракете
+// РџСЂРёРјРµРЅРµРЅРёРµ С„РёР·РёРєРё Рє СЂР°РєРµС‚Рµ
 void Rocket::ApplyPhysics(double dt) {
-    // Сбрасывание ускорения до гравитации
+    // РЎР±СЂР°СЃС‹РІР°РЅРёРµ СѓСЃРєРѕСЂРµРЅРёСЏ РґРѕ РіСЂР°РІРёС‚Р°С†РёРё
     acceleration = Vector2(0, GameData::GRAVITY);
 
-    // Добавление ускорения от тяги
+    // Р”РѕР±Р°РІР»РµРЅРёРµ СѓСЃРєРѕСЂРµРЅРёСЏ РѕС‚ С‚СЏРіРё
     if (thrust > GameData::THRUST_MIN_VAL) {
         Vector2 thrustForce = direction * GameData::MAX_THRUST_FORCE * thrust;
         acceleration = acceleration + thrustForce;
     }
-    // Обновление скорости и позиции
+    // РћР±РЅРѕРІР»РµРЅРёРµ СЃРєРѕСЂРѕСЃС‚Рё Рё РїРѕР·РёС†РёРё
     velocity = velocity + acceleration * dt;
     position = position + velocity * dt;
 }
 
-// Отрисовка тела ракеты
+// РћС‚СЂРёСЃРѕРІРєР° С‚РµР»Р° СЂР°РєРµС‚С‹
 void Rocket::DrawRocketBody() {
     Vector2 top = position + direction * (GameData::ROCKET_HEIGHT / 2);
 
@@ -176,21 +190,21 @@ void Rocket::DrawRocketBody() {
     ShapeRenderer::DrawTriangle(top, left, right, GameData::ROCKET_COLOR);
 }
 
-// Отрисовка окна ракеты
+// РћС‚СЂРёСЃРѕРІРєР° РѕРєРЅР° СЂР°РєРµС‚С‹
 void Rocket::DrawRocketWindow() {
     Vector2 windowPos = position + direction * GameData::WINDOW_OFFSET_Y;
     ShapeRenderer::DrawCircle(windowPos, GameData::WINDOW_RADIUS, GameData::WINDOW_COLOR);
 }
 
-// Отрисовка пламени ракеты
+// РћС‚СЂРёСЃРѕРІРєР° РїР»Р°РјРµРЅРё СЂР°РєРµС‚С‹
 void Rocket::DrawRocketFlame() {
     double flameHeight = GameData::FLAME_MAX_HEIGHT * flameSize;
     double flameWidth = GameData::FLAME_MAX_WIDTH * flameSize;
 
-    // Основание пламени (центр хвоста ракеты)
+    // РћСЃРЅРѕРІР°РЅРёРµ РїР»Р°РјРµРЅРё (С†РµРЅС‚СЂ С…РІРѕСЃС‚Р° СЂР°РєРµС‚С‹)
     Vector2 flameBase = position - direction * (GameData::ROCKET_HEIGHT / 2);
 
-    // Вершина пламени
+    // Р’РµСЂС€РёРЅР° РїР»Р°РјРµРЅРё
     Vector2 flameTip = flameBase - direction * flameHeight;
 
     Vector2 perpendicular(-direction.y, direction.x);
@@ -201,11 +215,151 @@ void Rocket::DrawRocketFlame() {
 }
 
 
-// Инициализация статических членов Rocket
+void MoonSurface::Generate() {
+    surfacePoints.clear();
+
+    // РџРµСЂРІР°СЏ С‚РѕС‡РєР°
+    double x = 0;
+    double y = SCREEN_HEIGHT - (GameData::MOON_MIN_HEIGHT_MAP + 1 +
+        rand() % int(GameData::MOON_MAX_HEIGHT_MAP - GameData::MOON_MIN_HEIGHT_MAP));
+    surfacePoints.emplace_back(x, y);
+
+    while (!stop_generate) {
+        double h = SCREEN_HEIGHT - surfacePoints.back().y;
+        double h_max = h + rand() % int(GameData::MOON_MAX_HEIGHT_MAP - h);
+        double h_min = GameData::MOON_MIN_HEIGHT_MAP + rand() %
+            int(h_max - GameData::MOON_MIN_HEIGHT_MAP);
+
+        GenerateLeftPartOfMauntain(h_max);
+        GenerateStraightPartOfMauntain();
+        GenerateRightPartOfMauntain(h_min);
+        GenerateStraightPartOfMauntain();
+    }
+}
+
+// Р“РµРЅРµСЂР°С†РёСЏ РґР»РёРЅС‹ СѓС‡Р°СЃС‚РєР° РїРѕРІРµСЂС…РЅРѕСЃС‚Рё
+double MoonSurface::Rand_length() {
+    double length = GameData::MOON_MIN_LENGTH;
+    if (GameData::MOON_MIN_LENGTH != GameData::MOON_MAX_LENGTH) {
+        length += rand() % int(GameData::MOON_MAX_LENGTH - GameData::MOON_MIN_LENGTH);
+    }
+    return length;
+}
+
+// Р“РµРЅРµСЂР°С†РёСЏ РІС‹СЃРѕС‚С‹ СѓС‡Р°СЃС‚РєР° РїРѕРІРµСЂС…РЅРѕСЃС‚Рё
+double MoonSurface::Rand_height() {
+    double height = GameData::MOON_MIN_HEIGHT;
+    if (GameData::MOON_MIN_HEIGHT != GameData::MOON_MAX_HEIGHT) {
+        height += rand() % int(GameData::MOON_MAX_HEIGHT - GameData::MOON_MIN_HEIGHT);
+    }
+    return height;
+}
+
+// Р“РµРЅРµСЂР°С†РёСЏ Р»РµРІРѕР№ С‡Р°СЃС‚Рё РіРѕСЂС‹ (РІРѕР·РІС‹С€РµРЅРёРµ)
+void MoonSurface::GenerateLeftPartOfMauntain(double h_max) {
+    if (stop_generate) return;
+    bool go_up = true;
+    while (go_up) {
+        double x = surfacePoints.back().x + Rand_length();
+        double h = SCREEN_HEIGHT - surfacePoints.back().y + Rand_height();
+        if (h >= h_max) {
+            h = h_max;
+            go_up = false;
+        }
+        double y = SCREEN_HEIGHT - h;
+        if (x >= SCREEN_WIDTH) {
+            x = SCREEN_WIDTH;
+            stop_generate = true;
+        }
+        surfacePoints.emplace_back(x, y);
+        if (stop_generate) return;
+    }
+}
+
+// Р“РµРЅРµСЂР°С†РёСЏ РїСЂР°РІРѕР№ С‡Р°СЃС‚Рё РіРѕСЂС‹ (СЃРїР°Рґ)
+void MoonSurface::GenerateRightPartOfMauntain(double h_min) {
+    if (stop_generate) return;
+    bool go_down = true;
+    while (go_down) {
+        double x = surfacePoints.back().x + Rand_length();
+        double h = SCREEN_HEIGHT - surfacePoints.back().y - Rand_height();
+        if (h <= h_min) {
+            h = h_min;
+            go_down = false;
+        }
+        double y = SCREEN_HEIGHT - h;
+        if (x >= SCREEN_WIDTH) {
+            x = SCREEN_WIDTH;
+            stop_generate = true;
+        }
+        surfacePoints.emplace_back(x, y);
+        if (stop_generate) break;
+    }
+}
+
+// Р“РµРЅРµСЂР°С†РёСЏ РїСЂСЏРјРѕРіРѕ СѓС‡Р°СЃС‚РєР° РіРѕСЂС‹
+void MoonSurface::GenerateStraightPartOfMauntain() {
+    if (stop_generate) return;
+    double x = surfacePoints.back().x + GameData::MOON_LENGTH_X1;
+    double y = surfacePoints.back().y;
+    if (x >= SCREEN_WIDTH) {
+        x = SCREEN_WIDTH;
+        stop_generate = true;
+    }
+    surfacePoints.emplace_back(x, y);
+}
+
+
+// Р РёСЃРѕРІР°РЅРёРµ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё Р›СѓРЅС‹
+void MoonSurface::Draw() {
+    for (size_t i = 1; i < surfacePoints.size(); ++i) {
+        ShapeRenderer::DrawLine(surfacePoints[i - 1], surfacePoints[i], GameData::MOON_COLOR);
+    }
+}
+
+// РџСЂРѕРІРµСЂРєР° РєРѕР»Р»РёР·РёРё СЂР°РєРµС‚С‹ СЃ РїРѕРІРµСЂС…РЅРѕСЃС‚СЊСЋ
+bool MoonSurface::CheckCollision(const Vector2& rocketPos, const Vector2& rocketDir){
+    // 1. РџРѕР»СѓС‡Р°РµРј С‚СЂРё РІРµСЂС€РёРЅС‹ СЂР°РєРµС‚С‹ (РЅРѕСЃ, Р»РµРІС‹Р№ Рё РїСЂР°РІС‹Р№ СѓРіРѕР»)
+    Vector2 nose = rocketPos + rocketDir * (GameData::ROCKET_HEIGHT / 2);
+    Vector2 left = rocketPos - rocketDir * (GameData::ROCKET_HEIGHT / 2) +
+        Vector2(-rocketDir.y, rocketDir.x) * (GameData::ROCKET_WIDTH / 2);
+    Vector2 right = rocketPos - rocketDir * (GameData::ROCKET_HEIGHT / 2) +
+        Vector2(-rocketDir.y, rocketDir.x) * (-GameData::ROCKET_WIDTH / 2);
+
+    // 2. РџСЂРѕРІРµСЂСЏРµРј РєР°Р¶РґСѓСЋ С‚РѕС‡РєСѓ СЂР°РєРµС‚С‹ РЅР° РїРµСЂРµСЃРµС‡РµРЅРёРµ СЃ РїРѕРІРµСЂС…РЅРѕСЃС‚СЊСЋ
+    return IsPointUnderSurface(nose) ||
+        IsPointUnderSurface(left) ||
+        IsPointUnderSurface(right);
+}
+
+// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ: РїСЂРѕРІРµСЂСЏРµС‚, РЅР°С…РѕРґРёС‚СЃСЏ Р»Рё С‚РѕС‡РєР° РїРѕРґ РїРѕРІРµСЂС…РЅРѕСЃС‚СЊСЋ
+bool MoonSurface::IsPointUnderSurface(const Vector2& point){
+    return GetAltitudeAboveMoon(point) <= 0;
+}
+
+// РџРѕР»СѓС‡РµРЅРёРµ РІС‹СЃРѕС‚С‹ СЂР°РєРµС‚С‹ РЅР°Рґ РїРѕРІРµСЂС…РЅРѕСЃС‚СЊСЋ Р›СѓРЅС‹
+double MoonSurface::GetAltitudeAboveMoon(const Vector2& rocketPos) {
+    for (size_t i = 1; i < surfacePoints.size(); ++i) {
+        if (rocketPos.x >= surfacePoints[i - 1].x && rocketPos.x <= surfacePoints[i].x) {
+            double t = (rocketPos.x - surfacePoints[i - 1].x) / (surfacePoints[i].x - surfacePoints[i - 1].x);
+            double surfaceY = surfacePoints[i - 1].y + t * (surfacePoints[i].y - surfacePoints[i - 1].y);
+            return surfaceY - rocketPos.y; // Р’С‹СЃРѕС‚Р° РЅР°Рґ РїРѕРІРµСЂС…РЅРѕСЃС‚СЊСЋ
+        }
+    }
+    return SCREEN_HEIGHT;
+}
+
+
+// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃС‚Р°С‚РёС‡РµСЃРєРёС… С‡Р»РµРЅРѕРІ Rocket
 Vector2 Rocket::position;
 Vector2 Rocket::direction;
 Vector2 Rocket::velocity;
 Vector2 Rocket::acceleration;
 double Rocket::angle;
+double Rocket::altitudeAboveMoon;
 double Rocket::flameSize;
 double Rocket::thrust;
+
+// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃС‚Р°С‚РёС‡РµСЃРєРёС… С‡Р»РµРЅРѕРІ MoonSurface
+std::vector<Vector2> MoonSurface::surfacePoints;
+bool MoonSurface::stop_generate = false;
