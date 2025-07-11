@@ -8,6 +8,9 @@
 // Класс для отрисовки фигур
 class ShapeRenderer {
 public:
+	// Рисование прямоугольника
+	static void DrawRect(int x, int y, int width, int height, uint32_t color);
+    
     // Рисование линии между двумя точками
     static void DrawLine(const Vector2& from, const Vector2& to, uint32_t color);
 

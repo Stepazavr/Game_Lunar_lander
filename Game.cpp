@@ -1,9 +1,16 @@
 #include "GameData.h"
 #include "Rocket.h"
 #include "MoonSurface.h"
+#include "HUD.h"
 
 #include <ctime>
 #include <Windows.h>
+
+
+void initializeLevel() {
+    Rocket::Initialize();
+    MoonSurface::Generate();
+}
 
 
 void initialize() {
@@ -14,8 +21,7 @@ void initialize() {
     //freopen_s(&stream, "CONOUT$", "w", stdout);
     //freopen_s(&stream, "CONOUT$", "w", stderr);
 
-    Rocket::Initialize();
-    MoonSurface::Generate();
+    initializeLevel();
 }
 
 
@@ -33,6 +39,7 @@ void draw() {
 
     Rocket::Draw();
     MoonSurface::Draw();
+	HUD::Draw();
 }
 
 

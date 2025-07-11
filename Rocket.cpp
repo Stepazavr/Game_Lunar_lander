@@ -2,10 +2,15 @@
 #include "MoonSurface.h"
 #include "ShapeRenderer.h"
 
-
-#include <math.h>
+#include <cmath>
 #include <algorithm>
 
+double Rocket::GetAngleDegrees() {
+    double norm_angle = std::fmod(angle, 2.0 * PI);
+    if (norm_angle > PI) norm_angle -= 2.0 * PI;
+    if (norm_angle < -PI) norm_angle += 2.0 * PI;
+	return norm_angle * 180.0 / PI;
+}
 
 // Инициализация ракеты
 void Rocket::Initialize() {
@@ -44,6 +49,9 @@ void Rocket::Update(double dt) {
     if (MoonSurface::CheckCollision(position, direction)) {
         if (altitudeAboveMoon < 1.0 && std::abs(angle) < 1.0) {
             //std::cout << "Rocket landed successfully!" << std::endl;
+            Rocket::Initialize();
+            MoonSurface::Generate();
+
         }
         else {
             //std::cout << "Rocket crashed!" << std::endl;

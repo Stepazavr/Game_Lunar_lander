@@ -26,6 +26,9 @@
     <ClCompile Include="ShapeRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HUD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h">
@@ -44,6 +47,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vector2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HUD.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pixel_font.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -15,6 +15,13 @@ private:
     static double altitudeAboveMoon;         // Высота ракеты над поверхностью Луны
     static double flameSize;      // Размер пламени (0..1)
     static double thrust;         // Сила тяги (0..1)
+    
+public:
+    static Vector2 GetVelocity() { return velocity; }
+	static Vector2 GetPosition() { return position; }
+    static double GetAltitude() { return altitudeAboveMoon; }
+    static double GetThrust() { return thrust; }
+    static double GetAngleDegrees();
 
 public:
     static void Initialize(); // Инициализация ракеты

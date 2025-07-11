@@ -2,6 +2,16 @@
 
 #include <algorithm>
 
+// Рисование прямоугольника
+void ShapeRenderer::DrawRect(int x, int y, int width, int height, uint32_t color) {
+    for (int i = y; i < y + height; ++i) {
+        for (int j = x; j < x + width; ++j) {
+            if (i >= 0 && i < SCREEN_HEIGHT && j >= 0 && j < SCREEN_WIDTH) {
+                buffer[i][j] = color;
+            }
+        }
+    }
+}
 
 // Рисование линии между двумя точками
 void ShapeRenderer::DrawLine(const Vector2& from, const Vector2& to, uint32_t color) {

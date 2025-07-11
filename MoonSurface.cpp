@@ -4,6 +4,7 @@
 
 void MoonSurface::Generate() {
     surfacePoints.clear();
+	stop_generate = false;
 
     // Первая точка
     double x = 0;
@@ -105,8 +106,20 @@ void MoonSurface::GenerateStraightPartOfMauntain() {
 
 // Рисование поверхности Луны
 void MoonSurface::Draw() {
+	uint32_t color = GameData::MOON_COLOR;
     for (size_t i = 1; i < surfacePoints.size(); ++i) {
-        ShapeRenderer::DrawLine(surfacePoints[i - 1], surfacePoints[i], GameData::MOON_COLOR);
+        if (surfacePoints[i - 1].y == surfacePoints[i].y) {
+            double length = surfacePoints[i].x - surfacePoints[i - 1].x;
+            if (length <= GameData::MOON_LENGTH_X1 && length > GameData::MOON_LENGTH_X2)
+                color = GameData::MOON_LANDING_COLOR;
+			else if (length <= GameData::MOON_LENGTH_X2 && length > GameData::MOON_LENGTH_X3)
+                color = GameData::DARK_ORANGE;
+			else if (length <= GameData::MOON_LENGTH_X3)
+				color = GameData::RED_3;
+        } else
+            color = GameData::MOON_COLOR;
+
+        ShapeRenderer::DrawLine(surfacePoints[i - 1], surfacePoints[i], color);
     }
 }
 
