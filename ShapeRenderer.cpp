@@ -1,0 +1,80 @@
+#include "ShapeRenderer.h"
+
+#include <algorithm>
+
+
+// Рисование линии между двумя точками
+void ShapeRenderer::DrawLine(const Vector2& from, const Vector2& to, uint32_t color) {
+    double steps = std::max(abs(to.x - from.x), abs(to.y - from.y));
+    if (steps == 0) {
+        buffer[int(to.y)][int(to.x)] = color;
+        return;
+    }
+    for (int i = 0; i <= steps; i++) {
+        double t = i / steps;
+        int x = int(from.x + (to.x - from.x) * t);
+        int y = int(from.y + (to.y - from.y) * t);
+
+        if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT) {
+            buffer[y][x] = color;
+        }
+    }
+}
+
+// Рисование треугольника по трем вершинам
+void ShapeRenderer::DrawTriangle(const Vector2& p1, const Vector2& p2, const Vector2& p3, uint32_t color) {
+    DrawLine(p1, p2, color);
+    DrawLine(p2, p3, color);
+    DrawLine(p3, p1, color);
+    FillTriangle(p1, p2, p3, color);
+}
+
+// Рисование круга с центром в заданной точке и заданным радиусом
+void ShapeRenderer::DrawCircle(const Vector2& center, double radius, uint32_t color) {
+    for (int y = -radius; y <= radius; y++) {
+        for (int x = -radius; x <= radius; x++) {
+            if (x * x + y * y <= radius * radius) {
+                int px = int(center.x + x);
+                int py = int(center.y + y);
+                if (px >= 0 && px < SCREEN_WIDTH && py >= 0 && py < SCREEN_HEIGHT) {
+                    buffer[py][px] = color;
+                }
+            }
+        }
+    }
+}
+
+// Закрашивание треугольника
+void ShapeRenderer::FillTriangle(const Vector2& p1, const Vector2& p2, const Vector2& p3, uint32_t color) {
+    int minX = int(std::min(p1.x, std::min(p2.x, p3.x)));
+    int maxX = int(std::max(p1.x, std::max(p2.x, p3.x)));
+    int minY = int(std::min(p1.y, std::min(p2.y, p3.y)));
+    int maxY = int(std::max(p1.y, std::max(p2.y, p3.y)));
+
+    for (int y = minY; y <= maxY; y++) {
+        for (int x = minX; x <= maxX; x++) {
+            if (IsPointInTriangle(Vector2(x, y), p1, p2, p3)) {
+                if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT) {
+                    buffer[y][x] = color;
+                }
+            }
+        }
+    }
+}
+
+// Проверка точки внутри треугольника 
+bool ShapeRenderer::IsPointInTriangle(const Vector2& pt, const Vector2& v1, const Vector2& v2, const Vector2& v3) {
+    // Веторное произведение векторов [AB, AC]
+    auto cross = [](const Vector2& A, const Vector2& B, const Vector2& C) {
+        return (B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x);
+        };
+
+    double d1 = cross(pt, v1, v2);
+    double d2 = cross(pt, v2, v3);
+    double d3 = cross(pt, v3, v1);
+
+    bool allPositive = (d1 > 0) && (d2 > 0) && (d3 > 0);
+    bool allNegative = (d1 < 0) && (d2 < 0) && (d3 < 0);
+
+    return allPositive || allNegative;
+}

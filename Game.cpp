@@ -1,4 +1,6 @@
-#include "GameClass.h"
+#include "GameData.h"
+#include "Rocket.h"
+#include "MoonSurface.h"
 
 #include <ctime>
 #include <Windows.h>
