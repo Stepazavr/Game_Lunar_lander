@@ -5,6 +5,9 @@
 #include <cmath>
 #include <algorithm>
 
+#define NOMINMAX
+#include <windows.h>
+
 double Rocket::GetAngleDegrees() {
     double norm_angle = std::fmod(angle, 2.0 * PI);
     if (norm_angle > PI) norm_angle -= 2.0 * PI;
@@ -45,20 +48,6 @@ void Rocket::Update(double dt) {
     }
     altitudeAboveMoon = MoonSurface::GetAltitudeAboveMoon(position - direction * (GameData::ROCKET_HEIGHT / 2));
 
-    // Коллизия с поверхностью
-    if (MoonSurface::CheckCollision(position, direction)) {
-        if (altitudeAboveMoon < 1.0 && std::abs(angle) < 1.0) {
-            //std::cout << "Rocket landed successfully!" << std::endl;
-            Rocket::Initialize();
-            MoonSurface::Generate();
-
-        }
-        else {
-            //std::cout << "Rocket crashed!" << std::endl;
-            //schedule_quit_game();
-        }
-        velocity = Vector2(0, 0);
-    }
 }
 
 // Отрисовка ракеты

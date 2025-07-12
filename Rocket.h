@@ -19,6 +19,7 @@ private:
 public:
     static Vector2 GetVelocity() { return velocity; }
 	static Vector2 GetPosition() { return position; }
+	static Vector2 GetDirection() { return direction; }
     static double GetAltitude() { return altitudeAboveMoon; }
     static double GetThrust() { return thrust; }
     static double GetAngleDegrees();

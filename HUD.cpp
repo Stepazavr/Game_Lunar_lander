@@ -1,6 +1,7 @@
 #include "HUD.h"
 #include "pixel_font.h"
 #include "ShapeRenderer.h"
+#include "Score.h"
 
 #include <sstream>
 #include <iomanip>
@@ -19,7 +20,8 @@ void HUD::Draw() {
         "Speed X: " + FormatValue(velocity.x * GameData::HUD_VAL_SCALE),
         "Speed Y: " + FormatValue(velocity.y * GameData::HUD_VAL_SCALE),
         "Speed: " + FormatValue(speed * GameData::HUD_VAL_SCALE),
-        "Altitude: " + FormatValue(altitude * GameData::HUD_VAL_SCALE)
+        "Altitude: " + FormatValue(altitude * GameData::HUD_VAL_SCALE),
+		"Score: " + FormatValue(Score::score)
     };
     DrawTextBlock(GameData::HUD_PADDING_LEFT_X, GameData::HUD_PADDING_LEFT_Y, leftText);
 
@@ -43,53 +45,11 @@ std::string HUD::FormatValue(double value, int precision) {
     return oss.str();
 }
 
-void HUD::DrawText(int x, int y, const std::string& text, uint32_t color) {
-    const auto& font = Fonts::Standard5x7;
-    for (char c : text) {
-        if (font.characters.count(c)) {
-            const auto& bitmap = font.characters.at(c);
-            for (int i = 0; i < font.height; ++i) {
-                for (int j = 0; j < font.width; ++j) {
-                    if (bitmap[i * font.width + j]) {
-                        buffer[y + i][x + j] = color;
-                    }
-                }
-            }
-        }
-        x += font.width + 1; // +1 пиксель промежуток
-    }
-}
-
-void HUD::DrawTextScaled(int x, int y, const std::string& text, uint32_t color, int scale) {
-    const auto& font = Fonts::Standard5x7;
-    for (char c : text) {
-        if (font.characters.count(c)) {
-            const auto& bitmap = font.characters.at(c);
-            for (int i = 0; i < font.height; ++i) {
-                for (int j = 0; j < font.width; ++j) {
-                    if (bitmap[i * font.width + j]) {
-                        // Масштабирование
-                        for (int dy = 0; dy < scale; ++dy) {
-                            for (int dx = 0; dx < scale; ++dx) {
-                                int px = x + j * scale + dx;
-                                int py = y + i * scale + dy;
-                                if (px < SCREEN_WIDTH && py < SCREEN_HEIGHT) {
-                                    buffer[py][px] = color;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        x += (font.width + 1) * scale;
-    }
-}
 
 
 void HUD::DrawTextBlock(int x, int y, const std::vector<std::string>& lines) {
     for (int i = 0; i < lines.size(); ++i) {
-        DrawTextScaled(x, y + i * GameData::HUD_FONT_SIZE, lines[i], GameData::HUD_TEXT_COLOR, 2);
+        ShapeRenderer::DrawText(x, y + i * GameData::HUD_FONT_SIZE, lines[i], GameData::HUD_TEXT_COLOR, 2);
     }
 }
 

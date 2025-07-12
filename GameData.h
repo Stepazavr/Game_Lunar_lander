@@ -4,6 +4,9 @@
 
 
 #define PI 3.14159265358979323846
+#define PIXELFONT_H 7
+#define PIXELFONT_W 5
+
 
 // Класс для хранения всех констант
 namespace GameData {
@@ -73,6 +76,8 @@ namespace GameData {
     constexpr int MOON_LENGTH_X3 = 40; // Длина учатка с коэффициентом очков x3
     constexpr uint32_t MOON_COLOR = 0xFFFFFFFF; // Белый цвет поверхности
 	constexpr uint32_t MOON_LANDING_COLOR = GREEN; // Зеленый цвет для безопасной посадки
+	constexpr uint32_t POINTS_INFO_COLOR = DARK_BLUE; // Синий цвет для информации о очках
+	constexpr int POINTS_INFO_MARGIN_Y = 15; // Отступ по Y для информации о очках
 
 
     // Цвета и параметры интерфейса

@@ -2,6 +2,8 @@
 #include "Rocket.h"
 #include "MoonSurface.h"
 #include "HUD.h"
+#include "GameLogic.h"
+
 
 #include <ctime>
 #include <Windows.h>
@@ -28,8 +30,12 @@ void initialize() {
 void act(float dt) {
     if (is_key_pressed(VK_ESCAPE))
         schedule_quit_game();
+    if (is_key_pressed(VK_SPACE))
+        pause();
+    
 
     Rocket::Update(static_cast<double>(dt));
+	gameLevelUpdate();
 }
 
 

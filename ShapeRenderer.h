@@ -3,11 +3,15 @@
 #include "GameData.h"
 #include "Vector2.h"
 
+#include <string>
 
 
 // Класс для отрисовки фигур
 class ShapeRenderer {
 public:
+    // Отрисовка текста с масштабом
+    static void DrawText(int x, int y, const std::string& text, uint32_t color, int scale = 1);
+
 	// Рисование прямоугольника
 	static void DrawRect(int x, int y, int width, int height, uint32_t color);
     

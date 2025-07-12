@@ -1,6 +1,35 @@
 #include "ShapeRenderer.h"
+#include "pixel_font.h"
 
 #include <algorithm>
+
+
+void ShapeRenderer::DrawText(int x, int y, const std::string& text, uint32_t color, int scale) {
+    const auto& font = Fonts::Standard5x7;
+    for (char c : text) {
+        if (font.characters.count(c)) {
+            const auto& bitmap = font.characters.at(c);
+            for (int i = 0; i < font.height; ++i) {
+                for (int j = 0; j < font.width; ++j) {
+                    if (bitmap[i * font.width + j]) {
+                        // Масштабирование
+                        for (int dy = 0; dy < scale; ++dy) {
+                            for (int dx = 0; dx < scale; ++dx) {
+                                int px = x + j * scale + dx;
+                                int py = y + i * scale + dy;
+                                if (px < SCREEN_WIDTH && py < SCREEN_HEIGHT) {
+                                    buffer[py][px] = color;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        x += (font.width + 1) * scale;
+    }
+}
+
 
 // Рисование прямоугольника
 void ShapeRenderer::DrawRect(int x, int y, int width, int height, uint32_t color) {

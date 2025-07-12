@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GameData.h"
+
 #include <map>
 #include <vector>
 
@@ -12,7 +14,7 @@ struct PixelFont {
 
 namespace Fonts {
     const PixelFont Standard5x7 = {
-        5, 7, {
+        PIXELFONT_W, PIXELFONT_H, {
             // Заглавные буквы (A-Z)
             {'A', {0,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1}},
             {'B', {1,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,0}},
