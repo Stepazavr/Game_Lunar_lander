@@ -3,6 +3,8 @@
 #include "ShapeRenderer.h"
 #include "Score.h"
 #include "Complexity.h"
+#include "Time.h"
+#include "GameLogic.h"
 
 
 #include <sstream>
@@ -21,26 +23,33 @@ void HUD::Draw() {
     std::vector<std::string> leftText = {
         "Speed X: " + FormatValue(velocity.x * GameData::HUD_VAL_SCALE),
         "Speed Y: " + FormatValue(velocity.y * GameData::HUD_VAL_SCALE),
-        "Speed: " + FormatValue(speed * GameData::HUD_VAL_SCALE),
+        "Angle: " + FormatValue(angle) + "°",
         "Altitude: " + FormatValue(altitude * GameData::HUD_VAL_SCALE),
-		"Score: " + FormatValue(Score::score),
         "Fuel: " + FormatValue(Rocket::GetFuel()) + " L",
+        "Thrust: " + FormatValue(thrust * 100) + "%"
     };
     DrawTextBlock(GameData::HUD_PADDING_LEFT_X, GameData::HUD_PADDING_LEFT_Y, leftText);
 
     // Правый блок (угол и тяга)
     std::vector<std::string> rightText = {
-		"Position X: " + FormatValue(pos.x),
-		"Position Y: " + FormatValue(pos.y),
-        "Angle: " + FormatValue(angle) + "°",
-        "Thrust: " + FormatValue(thrust * 100) + "%",
+        "Quit game: ESC",
+        "Pause: SPACE",
+        "Change difficulty: C",
+        " ",
+        "Score: " + FormatValue(Score::score),
+		"High Scores: " + FormatValue(Score::highScores[int(Complexity::GetDifficulty())]),
 		"Difficulty: " + Complexity::GetDifficultyName(),
+        "Time: " + FormatValue(Time::time) + " s"
     };
     DrawTextBlock(GameData::HUD_PADDING_RIGHT_X, GameData::HUD_PADDING_RIGHT_Y, rightText);
 
     // Отрисовка индикатора тяги
-    DrawBar(GameData::HUD_PADDING_RIGHT_X, GameData::HUD_PADDING_RIGHT_Y + rightText.size() * 
+    DrawBar(GameData::HUD_PADDING_LEFT_X, GameData::HUD_PADDING_RIGHT_Y + leftText.size() * 
         GameData::HUD_FONT_SIZE, GameData::HUD_BAR_WIDTH, GameData::HUD_BAR_HEIGHT, thrust);
+
+    if (GameLogic::isPause) // 930
+        HUD::DrawPause(750, GameData::HUD_PADDING_RIGHT_Y + GameData::HUD_FONT_SIZE, 1, GameData::GRAY);
+
 }
 
 std::string HUD::FormatValue(double value, int precision) {
@@ -61,4 +70,9 @@ void HUD::DrawTextBlock(int x, int y, const std::vector<std::string>& lines) {
 void HUD::DrawBar(int x, int y, int width, int height, float value) {
     ShapeRenderer::DrawRect(x, y, width, height, GameData::HUD_BAR_EMPTY_COLOR); // Серый фон
     ShapeRenderer::DrawRect(x, y, int(width * value), height, GameData::HUD_BAR_COLOR); // Зелёный заполнитель
+}
+
+void HUD::DrawPause(int x, int y, int size, uint32_t color) {
+    ShapeRenderer::DrawTriangle(Vector2(x, y), Vector2(x + size * 10, y + size * 5),
+                                Vector2(x, y + size * 10), color);
 }

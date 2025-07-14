@@ -156,6 +156,7 @@
     <ClInclude Include="Rocket.h" />
     <ClInclude Include="Score.h" />
     <ClInclude Include="ShapeRenderer.h" />
+    <ClInclude Include="Time.h" />
     <ClInclude Include="Vector2.h" />
   </ItemGroup>
   <ItemGroup>

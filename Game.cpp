@@ -5,6 +5,7 @@
 #include "GameLogic.h"
 #include "Explosion.h"
 #include "Complexity.h"
+#include "Time.h"
 
 
 #include <ctime>
@@ -33,22 +34,24 @@ void act(float dt) {
     if (is_key_pressed(VK_ESCAPE))
         schedule_quit_game();
     if (is_key_pressed(VK_SPACE))
-        pause();
+        GameLogic::pause();
     if (is_key_pressed('C')) {
         Complexity::ChangeDifficulty();
-        initializeNewLevel();
+        GameLogic::initializeNewSession();
     }
+    if (GameLogic::isPause) return;
+
+    Time::AddTime(double(dt));
 
     if (Rocket::IsAlive()) {
-        Rocket::Update(static_cast<double>(dt));
-        gameLevelUpdate();
+        Rocket::Update(double(dt));
+        GameLogic::gameLevelUpdate();
     }
     else if (Explosion::IsActive()) {
         Explosion::Update(dt);
-        if (!Explosion::IsActive()) 
-			initializeNewLevel();
+        if (!Explosion::IsActive())
+            GameLogic::initializeNewSession();
     }
-
 }
 
 

@@ -11,7 +11,7 @@ enum Difficulty {
 
 class Complexity {
 private:
-    inline static Difficulty difficulty = Difficulty::Easy;  // Текущий уровень сложности
+    inline static Difficulty difficulty = Difficulty::Medium;  // Текущий уровень сложности
 
 public:
     // Установить сложность

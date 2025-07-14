@@ -29,6 +29,7 @@ private:
     static void GeneratePartOfMauntain(double h_limit, int c); // √енераци€ части горы (возвышение (c = 1) или спад (c = -1))
     static void GenerateStraightPartOfMauntain();           // √енераци€ пр€мого участка горы
     static std::pair<Vector2, Vector2> GetSurfaceUnderRocket(const Vector2& rocketPos);
+	static int ChooseDirection(double h_min, double h_max); // 0 (спад) или 1 (возвышение)
 
     static double Rand_length();
     static double Rand_height();

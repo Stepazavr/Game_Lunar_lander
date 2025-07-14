@@ -71,13 +71,15 @@ namespace GameData {
     // Параметры лунной поверхности
     constexpr int MOON_MIN_HEIGHT_MAP = 100;  // Минимальная высота поверхности
     constexpr int MOON_MAX_HEIGHT_MAP = 400;  // Максимальная высота поверхности
-	constexpr int MOON_MIN_LENGTH = 10; // Минимальная длина участка поверхности
-    constexpr int MOON_MAX_LENGTH = 20; // Максимальная длина участка поверхности
+	constexpr int MOON_MIN_HEIGHT_MOUNTAIN = 50; // Минимальная высота горы
+	constexpr int MOON_MIN_LENGTH = 5; // Минимальная длина участка поверхности
+    constexpr int MOON_MAX_LENGTH = 10; // Максимальная длина участка поверхности
 	constexpr int MOON_MIN_HEIGHT = 5; // Минимальная высота участка поверхности
-    constexpr int MOON_MAX_HEIGHT = 25; // Максимальная высота участка поверхности
+    constexpr int MOON_MAX_HEIGHT = 10; // Максимальная высота участка поверхности
 	constexpr int MOON_LENGTH_X1 = 120; // Длина учатка с коэффициентом очков x1
     constexpr int MOON_LENGTH_X2 = 60; // Длина учатка с коэффициентом очков x2
     constexpr int MOON_LENGTH_X3 = 40; // Длина учатка с коэффициентом очков x3
+    constexpr int MAX_ALLOWED_STRAIGHT_X = SCREEN_WIDTH - MOON_LENGTH_X1;
     constexpr uint32_t MOON_COLOR = 0xFFFFFFFF; // Белый цвет поверхности
 	constexpr uint32_t MOON_LANDING_COLOR = GREEN; // Зеленый цвет для безопасной посадки
 	constexpr uint32_t POINTS_INFO_COLOR = DARK_BLUE; // Синий цвет для информации о очках
@@ -89,7 +91,7 @@ namespace GameData {
     constexpr uint32_t HUD_BG_COLOR = BLACK_2;  // Полупрозрачный чёрный
     constexpr int HUD_PADDING_LEFT_X = 30;
 	constexpr int HUD_PADDING_LEFT_Y = 30;
-	constexpr int HUD_PADDING_RIGHT_X = SCREEN_WIDTH - 200;
+	constexpr int HUD_PADDING_RIGHT_X = SCREEN_WIDTH - 250;
 	constexpr int HUD_PADDING_RIGHT_Y = 30;
     constexpr int HUD_FONT_SIZE = 30;
     constexpr int HUD_BAR_WIDTH = 100;

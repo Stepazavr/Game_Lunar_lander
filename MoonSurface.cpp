@@ -4,6 +4,9 @@
 
 
 double RandInInterval(double min, double max) {
+    if (min > max) {
+        std::swap(min, max);
+	}
     double res = min;
     if (min != max)
         res += rand() % int(max - min);
@@ -22,13 +25,16 @@ void MoonSurface::Generate() {
 
     while (!stop_generate) {
         double h = SCREEN_HEIGHT - surfacePoints.back().y;
-        double h_max = RandInInterval(h, GameData::MOON_MAX_HEIGHT_MAP);
-        double h_min = RandInInterval(GameData::MOON_MIN_HEIGHT_MAP, h_max);
+        double h_max = RandInInterval(h + GameData::MOON_MIN_HEIGHT_MOUNTAIN, GameData::MOON_MAX_HEIGHT_MAP);
+        double h_min = RandInInterval(GameData::MOON_MIN_HEIGHT_MAP, h - GameData::MOON_MIN_HEIGHT_MOUNTAIN);
+		std::vector<double> hLimits = { h_min, h_max };
 
-        GeneratePartOfMauntain(h_max, 1);
-        GenerateStraightPartOfMauntain();
-        GeneratePartOfMauntain(h_min, -1);
-        GenerateStraightPartOfMauntain();
+        int direction = ChooseDirection(h_min, h_max); // 0 (спад) или 1 (возвышение)
+
+        GeneratePartOfMauntain(hLimits[direction], 2 * direction - 1);
+
+        if (surfacePoints.back().x < GameData::MAX_ALLOWED_STRAIGHT_X)
+            GenerateStraightPartOfMauntain();
     }
 }
 
@@ -164,6 +170,15 @@ std::pair<Vector2, Vector2> MoonSurface::GetSurfaceUnderRocket(const Vector2& ro
 
 }
 
+// 0 (спад) или 1 (возвышение)
+int MoonSurface::ChooseDirection(double h_min, double h_max) {
+    if (h_min <= double(GameData::MOON_MIN_HEIGHT_MAP))
+        return 1;
+    else if (h_max >= double(GameData::MOON_MAX_HEIGHT_MAP))
+        return 0;
+    else
+        return rand() % 2;
+}
 // Инициализация статических членов MoonSurface
 std::vector<Vector2> MoonSurface::surfacePoints;
 bool MoonSurface::stop_generate = false;
