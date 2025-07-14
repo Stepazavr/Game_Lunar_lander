@@ -2,6 +2,8 @@
 
 #include "Engine.h"
 
+#include <vector>
+
 
 #define PI 3.14159265358979323846
 #define PIXELFONT_H 7
@@ -38,6 +40,8 @@ namespace GameData {
     constexpr double THRUST_MIN_VAL = 0.01;
     constexpr double MAX_THRUST = 1.0;
     constexpr double THRUST_SPEED = 5.0;
+	constexpr double FUEL_CONSUMPTION_RATE = 10; // Расход топлива с секунду
+    const std::vector<double> FUEL_MAX = { 120.0, 60.0, 30.0 }; // Максимальное количество топлива (Easy, Medium, Hard)
 
     // Цвета
 	constexpr uint32_t WHITE = 0xFFFFFFFF; // Белый
@@ -93,4 +97,16 @@ namespace GameData {
     constexpr uint32_t HUD_BAR_EMPTY_COLOR = GRAY;
     constexpr uint32_t HUD_BAR_COLOR = GREEN;
 	constexpr double HUD_VAL_SCALE = 0.1;
+
+
+    // Константы для взрыва
+    constexpr int EXPLOSION_PARTICLES_COUNT = 50; // Количество частиц взрыва
+    constexpr double EXPLOSION_DURATION = 1.0; // Длительность взрыва в секундах
+    constexpr double EXPLOSION_MIN_SPEED = 50.0; // Минимальная скорость частиц взрыва
+	constexpr double EXPLOSION_MAX_SPEED = 150.0; // Максимальная скорость частиц взрыва
+	constexpr int EXPLOSION_MAX_SIZE = 12; // Максимальный размер частиц взрыва
+    constexpr int EXPLOSION_MIN_SIZE = 1; // Минимальный размер частиц взрыва
+    constexpr uint32_t EXPLOSION_COLOR = ORANGE; // Цвет взрыва
+	constexpr uint32_t EXPLOSION__COLOR_2 = RED_3; // Вторичный цвет взрыва
+	constexpr double COEFF_CHANGE_COLOR = 0.5; // Коэффициент изменения цвета взрыва
 };

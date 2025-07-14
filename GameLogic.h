@@ -19,6 +19,13 @@ void pause() {
     Sleep(100);
 }
 
+
+void initializeNewLevel() {
+    Sleep(200);
+    Rocket::Initialize();
+    MoonSurface::Generate();
+}
+
 void gameLevelUpdate() {
     // Коллизия с поверхностью
     int surfaceIndex = -1;
@@ -26,14 +33,16 @@ void gameLevelUpdate() {
         if (surfaceIndex > 0 && Rocket::GetAltitude() < 5.0 && std::abs(Rocket::GetAngleDegrees()) < 10.0) {
             //std::cout << "Rocket landed successfully!" << std::endl;
             Score::AddScore(surfaceIndex * 10);
+            Sleep(1000);
+            initializeNewLevel();
         }
         else {
             Score::Reset();
+            Rocket::Destroy();
+
         }
-        Sleep(1000);
-        Rocket::Initialize();
-        MoonSurface::Generate();
-        //Rocket::GetVelocity() = Vector2(0, 0);
     }
 
 }
+
+

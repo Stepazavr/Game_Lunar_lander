@@ -1,6 +1,6 @@
 #include "MoonSurface.h"
 #include "ShapeRenderer.h"
-
+#include "Complexity.h"
 
 
 double RandInInterval(double min, double max) {
@@ -25,9 +25,9 @@ void MoonSurface::Generate() {
         double h_max = RandInInterval(h, GameData::MOON_MAX_HEIGHT_MAP);
         double h_min = RandInInterval(GameData::MOON_MIN_HEIGHT_MAP, h_max);
 
-        GenerateLeftPartOfMauntain(h_max);
+        GeneratePartOfMauntain(h_max, 1);
         GenerateStraightPartOfMauntain();
-        GenerateRightPartOfMauntain(h_min);
+        GeneratePartOfMauntain(h_min, -1);
         GenerateStraightPartOfMauntain();
     }
 }
@@ -42,16 +42,16 @@ double MoonSurface::Rand_height() {
     return RandInInterval(GameData::MOON_MIN_HEIGHT, GameData::MOON_MAX_HEIGHT);
 }
 
-// Генерация левой части горы (возвышение)
-void MoonSurface::GenerateLeftPartOfMauntain(double h_max) {
+// Генерация части горы (возвышение (c = 1) или спад (c = -1))
+void MoonSurface::GeneratePartOfMauntain(double h_limit, int c) {
     if (stop_generate) return;
-    bool go_up = true;
-    while (go_up) {
+    bool go = true;
+    while (go) {
         double x = surfacePoints.back().x + Rand_length();
-        double h = SCREEN_HEIGHT - surfacePoints.back().y + Rand_height();
-        if (h >= h_max) {
-            h = h_max;
-            go_up = false;
+        double h = SCREEN_HEIGHT - surfacePoints.back().y + c * Rand_height();
+        if (c * h >= c * h_limit) {
+            h = h_limit;
+            go = false;
         }
         double y = SCREEN_HEIGHT - h;
         if (x >= SCREEN_WIDTH) {
@@ -63,27 +63,6 @@ void MoonSurface::GenerateLeftPartOfMauntain(double h_max) {
     }
 }
 
-// Генерация правой части горы (спад)
-void MoonSurface::GenerateRightPartOfMauntain(double h_min) {
-    if (stop_generate) return;
-    bool go_down = true;
-    while (go_down) {
-        double x = surfacePoints.back().x + Rand_length();
-        double h = SCREEN_HEIGHT - surfacePoints.back().y - Rand_height();
-        if (h <= h_min) {
-            h = h_min;
-            go_down = false;
-        }
-        double y = SCREEN_HEIGHT - h;
-        if (x >= SCREEN_WIDTH) {
-            x = SCREEN_WIDTH;
-            stop_generate = true;
-        }
-        surfacePoints.emplace_back(x, y);
-        if (stop_generate) break;
-    }
-}
-
 // Генерация прямого участка горы
 void MoonSurface::GenerateStraightPartOfMauntain() {
     if (stop_generate) return;
@@ -92,8 +71,11 @@ void MoonSurface::GenerateStraightPartOfMauntain() {
                                         GameData::MOON_LENGTH_X3
     };
 
+	int leftIndex = std::max(int(Complexity::GetDifficulty()) - 1, 0);
+	int rightIndex = std::min(int(Complexity::GetDifficulty()) + 1, int(moonLengths.size()) - 1);
 
-    double x = surfacePoints.back().x + moonLengths[rand() % moonLengths.size()];
+
+    double x = surfacePoints.back().x + moonLengths[leftIndex + rand() % (rightIndex - leftIndex + 1)];
     double y = surfacePoints.back().y;
     if (x >= SCREEN_WIDTH) {
         x = SCREEN_WIDTH;

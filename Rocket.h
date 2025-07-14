@@ -15,6 +15,8 @@ private:
     static double altitudeAboveMoon;         // Высота ракеты над поверхностью Луны
     static double flameSize;      // Размер пламени (0..1)
     static double thrust;         // Сила тяги (0..1)
+    static bool isAlive;
+	static double fuel;          // Топливо ракеты
     
 public:
     static Vector2 GetVelocity() { return velocity; }
@@ -23,6 +25,8 @@ public:
     static double GetAltitude() { return altitudeAboveMoon; }
     static double GetThrust() { return thrust; }
     static double GetAngleDegrees();
+    static bool IsAlive() { return isAlive; }
+	static double GetFuel() { return fuel; }
 
 public:
     static void Initialize(); // Инициализация ракеты
@@ -30,6 +34,8 @@ public:
     static void Update(double dt); // Обновление состояния ракеты
 
     static void Draw(); // Отрисовка ракеты
+
+	static void Destroy(); // Уничтожение ракеты (взрыв)
 
 private:
     Rocket() = delete;

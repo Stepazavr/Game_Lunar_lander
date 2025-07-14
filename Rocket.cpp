@@ -1,6 +1,8 @@
 #include "Rocket.h"
 #include "MoonSurface.h"
 #include "ShapeRenderer.h"
+#include "Explosion.h"
+#include "Complexity.h"
 
 #include <cmath>
 #include <algorithm>
@@ -26,6 +28,8 @@ void Rocket::Initialize() {
 
     flameSize = 0.0;
     thrust = 0;
+	fuel = GameData::FUEL_MAX[int(Complexity::GetDifficulty())];
+	isAlive = true;
 }
 
 // Обновление состояния ракеты
@@ -77,10 +81,13 @@ void Rocket::UpdateRotation(double dt) {
 
 // Обновление тяги ракеты
 void Rocket::UpdateThrust(double dt) {
-    int thrustTarget = is_mouse_button_pressed(0) ? 1 : 0;
+
+    int thrustTarget = ( is_mouse_button_pressed(0) && (fuel > 0) ) ? 1 : 0;
     thrust += (thrustTarget * GameData::MAX_THRUST - thrust) * GameData::THRUST_SPEED * dt;
     thrust = std::max(0.0, std::min(GameData::MAX_THRUST, thrust));
 
+	fuel -= thrustTarget * GameData::FUEL_CONSUMPTION_RATE * dt;
+	fuel = std::max(0.0, fuel);
     // Размер пламени пропорционален тяге
     flameSize = thrust;
 }
@@ -138,6 +145,11 @@ void Rocket::DrawRocketFlame() {
 }
 
 
+void Rocket::Destroy() {
+    isAlive = false;
+    Explosion::Start(position);
+}
+
 // Инициализация статических членов Rocket
 Vector2 Rocket::position;
 Vector2 Rocket::direction;
@@ -147,3 +159,5 @@ double Rocket::angle;
 double Rocket::altitudeAboveMoon;
 double Rocket::flameSize;
 double Rocket::thrust;
+double Rocket::fuel;
+bool Rocket::isAlive;

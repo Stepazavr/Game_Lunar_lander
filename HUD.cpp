@@ -2,6 +2,8 @@
 #include "pixel_font.h"
 #include "ShapeRenderer.h"
 #include "Score.h"
+#include "Complexity.h"
+
 
 #include <sstream>
 #include <iomanip>
@@ -21,7 +23,8 @@ void HUD::Draw() {
         "Speed Y: " + FormatValue(velocity.y * GameData::HUD_VAL_SCALE),
         "Speed: " + FormatValue(speed * GameData::HUD_VAL_SCALE),
         "Altitude: " + FormatValue(altitude * GameData::HUD_VAL_SCALE),
-		"Score: " + FormatValue(Score::score)
+		"Score: " + FormatValue(Score::score),
+        "Fuel: " + FormatValue(Rocket::GetFuel()) + " L",
     };
     DrawTextBlock(GameData::HUD_PADDING_LEFT_X, GameData::HUD_PADDING_LEFT_Y, leftText);
 
@@ -31,6 +34,7 @@ void HUD::Draw() {
 		"Position Y: " + FormatValue(pos.y),
         "Angle: " + FormatValue(angle) + "°",
         "Thrust: " + FormatValue(thrust * 100) + "%",
+		"Difficulty: " + Complexity::GetDifficultyName(),
     };
     DrawTextBlock(GameData::HUD_PADDING_RIGHT_X, GameData::HUD_PADDING_RIGHT_Y, rightText);
 
