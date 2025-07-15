@@ -6,12 +6,13 @@ enum Difficulty {
     Easy,    // Легкий уровень
 	Medium,  // Средний уровень
     Hard,    // Сложный уровень
+	Demon,   // Демон
 	Сount    // Количество уровней сложности
 };
 
 class Complexity {
 private:
-    inline static Difficulty difficulty = Difficulty::Medium;  // Текущий уровень сложности
+    inline static Difficulty difficulty = Difficulty::Easy;  // Текущий уровень сложности
 
 public:
     // Установить сложность
@@ -28,6 +29,7 @@ public:
             case Difficulty::Easy: return "Easy";
             case Difficulty::Medium: return "Medium";
             case Difficulty::Hard: return "Hard";
+			case Difficulty::Demon: return "DEMON";
             default: return "Unknown";
 		}
     }

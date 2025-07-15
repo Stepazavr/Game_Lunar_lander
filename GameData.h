@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Engine.h"
+#include "Complexity.h"
 
 #include <vector>
+#include <map>
 
 
 #define PI 3.14159265358979323846
@@ -41,7 +43,15 @@ namespace GameData {
     constexpr double MAX_THRUST = 1.0;
     constexpr double THRUST_SPEED = 5.0;
 	constexpr double FUEL_CONSUMPTION_RATE = 10; // Расход топлива с секунду
-    const std::vector<double> FUEL_MAX = { 120.0, 60.0, 30.0 }; // Максимальное количество топлива (Easy, Medium, Hard)
+    const std::vector<double> FUEL_MAX = { 120.0, 60.0, 30.0, 45.0 }; // Максимальное количество топлива (Easy, Medium, Hard, Demon)
+    const std::map<Difficulty, std::vector<int>> MAP_LINES  = {
+        { Difficulty::Easy, { 1, 2 } },
+        { Difficulty::Medium, { 1, 2, 3 } },
+        { Difficulty::Hard, { 2, 3 } },
+        { Difficulty::Demon, { 2, 3 } }
+	};
+	constexpr double DEMONS_RANGE_OF_VIEW = 80.0; // Диапазон обзора для демона
+
 
     // Цвета
 	constexpr uint32_t WHITE = 0xFFFFFFFF; // Белый
@@ -84,7 +94,13 @@ namespace GameData {
 	constexpr uint32_t MOON_LANDING_COLOR = GREEN; // Зеленый цвет для безопасной посадки
 	constexpr uint32_t POINTS_INFO_COLOR = DARK_BLUE; // Синий цвет для информации о очках
 	constexpr int POINTS_INFO_MARGIN_Y = 15; // Отступ по Y для информации о очках
+    const std::vector<double> MOON_LENGTHS = { GameData::MOON_LENGTH_X1, GameData::MOON_LENGTH_X2,
+                                    GameData::MOON_LENGTH_X3 };
 
+    const std::vector<std::string> STRING_POINTS = { "", "+10", "+20", "+30" };
+    constexpr double POINTS_SCALE = 2;
+    const std::vector<uint32_t> COLOR_POINTS = { GameData::MOON_COLOR, GameData::GREEN,
+    GameData::DARK_ORANGE, GameData::RED_3 }; // Цвета для очков 
 
     // Цвета и параметры интерфейса
     constexpr uint32_t HUD_TEXT_COLOR = WHITE; // Белый

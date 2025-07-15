@@ -24,7 +24,7 @@ void Rocket::Initialize() {
     velocity = Vector2(0, 0);
     acceleration = Vector2(0, GameData::GRAVITY);
     angle = 0;
-    altitudeAboveMoon = SCREEN_HEIGHT;
+    altitudeAboveMoon = MoonSurface::GetAltitudeAboveMoon(position - direction * (GameData::ROCKET_HEIGHT / 2));;
 
     flameSize = 0.0;
     thrust = 0;

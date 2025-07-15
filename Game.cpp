@@ -13,8 +13,8 @@
 
 
 void initializeLevel() {
-    Rocket::Initialize();
     MoonSurface::Generate();
+    Rocket::Initialize();
 }
 
 
@@ -42,6 +42,7 @@ void act(float dt) {
     if (GameLogic::isPause) return;
 
     Time::AddTime(double(dt));
+    MoonSurface::Update();
 
     if (Rocket::IsAlive()) {
         Rocket::Update(double(dt));

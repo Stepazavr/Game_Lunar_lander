@@ -1,6 +1,7 @@
 #include "MoonSurface.h"
 #include "ShapeRenderer.h"
 #include "Complexity.h"
+#define NOMINMAX
 
 
 double RandInInterval(double min, double max) {
@@ -73,15 +74,13 @@ void MoonSurface::GeneratePartOfMauntain(double h_limit, int c) {
 void MoonSurface::GenerateStraightPartOfMauntain() {
     if (stop_generate) return;
 
-    const std::vector<double> moonLengths = { GameData::MOON_LENGTH_X1, GameData::MOON_LENGTH_X2,
-                                        GameData::MOON_LENGTH_X3
-    };
 
 	int leftIndex = std::max(int(Complexity::GetDifficulty()) - 1, 0);
-	int rightIndex = std::min(int(Complexity::GetDifficulty()) + 1, int(moonLengths.size()) - 1);
+	int rightIndex = std::min(int(Complexity::GetDifficulty()) + 1, int(GameData::MOON_LENGTHS.size()) - 1);
 
+    int index = rand() % GameData::MAP_LINES.at(Complexity::GetDifficulty()).size();
 
-    double x = surfacePoints.back().x + moonLengths[leftIndex + rand() % (rightIndex - leftIndex + 1)];
+    double x = surfacePoints.back().x + GameData::MOON_LENGTHS[GameData::MAP_LINES.at(Complexity::GetDifficulty())[index] - 1];
     double y = surfacePoints.back().y;
     if (x >= SCREEN_WIDTH) {
         x = SCREEN_WIDTH;
@@ -91,26 +90,36 @@ void MoonSurface::GenerateStraightPartOfMauntain() {
 }
 
 
+void MoonSurface::Update() {
+    if (Complexity::GetDifficulty() == Difficulty::Demon)
+        demonX = (demonX + 1) % SCREEN_WIDTH;
+}
+
 // Рисование поверхности Луны
 void MoonSurface::Draw() {
-    std::vector<std::string> stringPoints = { "", "+10", "+20", "+30" };
-    std::vector<uint32_t> colorPoints = { GameData::MOON_COLOR, GameData::GREEN,
-		GameData::DARK_ORANGE, GameData::RED_3 };
-
-    double pointsScale = 2;
     for (size_t i = 1; i < surfacePoints.size(); ++i) {
-        double surfaceIndex = GetSurfaceIndex(surfacePoints[i - 1], surfacePoints[i]);
-
-        double pointsX = (surfacePoints[i - 1].x + surfacePoints[i].x) / 2 -
-            PIXELFONT_W * (stringPoints[surfaceIndex].length() + 1);
-        double pointsY = surfacePoints[i].y + GameData::POINTS_INFO_MARGIN_Y;
-
-        ShapeRenderer::DrawText(pointsX, pointsY, 
-            stringPoints[surfaceIndex], colorPoints[surfaceIndex], pointsScale);
-
-        ShapeRenderer::DrawLine(surfacePoints[i - 1], surfacePoints[i], colorPoints[surfaceIndex]);
+        if (Complexity::GetDifficulty() == Difficulty::Demon) {
+            if ((surfacePoints[i].x < demonX ||
+                surfacePoints[i].x > demonX + GameData::DEMONS_RANGE_OF_VIEW))
+                continue;
+        }
+        DrawPart(surfacePoints[i - 1], surfacePoints[i]);
     }
 }
+
+void MoonSurface::DrawPart(const Vector2& A, const Vector2& B) {
+    double surfaceIndex = GetSurfaceIndex(A, B);
+
+    double pointsX = (A.x + B.x) / 2 -
+        PIXELFONT_W * (GameData::STRING_POINTS[surfaceIndex].length() + 1);
+    double pointsY = B.y + GameData::POINTS_INFO_MARGIN_Y;
+
+    ShapeRenderer::DrawText(pointsX, pointsY,
+        GameData::STRING_POINTS[surfaceIndex], GameData::COLOR_POINTS[surfaceIndex], GameData::POINTS_SCALE);
+
+    ShapeRenderer::DrawLine(A, B, GameData::COLOR_POINTS[surfaceIndex]);
+}
+
 
 // Проверка коллизии ракеты с поверхностью
 bool MoonSurface::CheckCollision(const Vector2& rocketPos, const Vector2& rocketDir, int& surfaceIndex) {
@@ -182,3 +191,4 @@ int MoonSurface::ChooseDirection(double h_min, double h_max) {
 // Инициализация статических членов MoonSurface
 std::vector<Vector2> MoonSurface::surfacePoints;
 bool MoonSurface::stop_generate = false;
+int MoonSurface::demonX = 0;

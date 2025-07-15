@@ -15,8 +15,6 @@
 
 
 
-
-
 struct GameLogic {
     inline static bool isPause = false;
 
@@ -27,8 +25,8 @@ struct GameLogic {
 
     static void initializeNewLevel() {
         Sleep(200);
-        Rocket::Initialize();
         MoonSurface::Generate();
+        Rocket::Initialize();
     }
 
     static void initializeNewSession() {
@@ -42,7 +40,8 @@ struct GameLogic {
         // Коллизия с поверхностью
         int surfaceIndex = -1;
         if (MoonSurface::CheckCollision(Rocket::GetPosition(), Rocket::GetDirection(), surfaceIndex)) {
-            if (surfaceIndex > 0 && Rocket::GetAltitude() < 5.0 && std::abs(Rocket::GetAngleDegrees()) < 10.0) {
+            if (surfaceIndex > 0 && Rocket::GetAltitude() < 4.0 && std::abs(Rocket::GetAngleDegrees()) < 7.0 
+                && Rocket::GetVelocity().Length() < 50) {
                 //std::cout << "Rocket landed successfully!" << std::endl;
                 Score::AddScore(surfaceIndex * 10);
                 Sleep(1000);
