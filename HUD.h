@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine.h"
-#include "Rocket.h"
 
 #include <string>
 #include <vector>
@@ -17,4 +16,3 @@ private:
     static void DrawBar(int x, int y, int width, int height, float value);
     static void DrawPause(int x, int y, int size, uint32_t color);
 };
-

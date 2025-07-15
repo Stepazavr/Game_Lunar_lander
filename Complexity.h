@@ -2,6 +2,7 @@
 
 #include <string>
 
+
 enum Difficulty {
     Easy,    // Легкий уровень
 	Medium,  // Средний уровень

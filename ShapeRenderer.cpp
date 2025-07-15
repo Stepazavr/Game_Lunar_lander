@@ -4,6 +4,7 @@
 #include <algorithm>
 
 
+
 void ShapeRenderer::DrawText(int x, int y, const std::string& text, uint32_t color, int scale) {
     const auto& font = Fonts::Standard5x7;
     for (char c : text) {

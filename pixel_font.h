@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 
-
+// Класс для хранения пиксельного шрифта
 struct PixelFont {
     int width;
     int height;

@@ -6,6 +6,7 @@
 #include <vector>
 
 
+
 class MoonSurface {
 private:
     static std::vector<Vector2> surfacePoints;

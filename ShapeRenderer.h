@@ -6,6 +6,7 @@
 #include <string>
 
 
+
 // Класс для отрисовки фигур
 class ShapeRenderer {
 public:

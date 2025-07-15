@@ -6,6 +6,7 @@
 #include <algorithm>
 
 
+
 void Explosion::Start(const Vector2& pos) {
     position = pos;
     isActive = true;

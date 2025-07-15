@@ -4,6 +4,7 @@
 #include "Vector2.h"
 
 
+
 // Класс ракеты (одиночка)
 class Rocket {
 private:

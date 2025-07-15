@@ -2,7 +2,6 @@
 
 #include <cmath>
 
-
 // 2D Вектор
 class Vector2 {
 public:

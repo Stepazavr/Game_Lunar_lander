@@ -5,6 +5,7 @@
 #include <vector>
 
 
+
 class Explosion {
 private:
     static bool isActive;         // Активен ли взрыв

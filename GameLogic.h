@@ -7,6 +7,7 @@
 #include "Vector2.h"
 #include "Time.h"
 
+
 #define NOGDI              // Отключает GDI-макросы
 #define NOUSER             // Отключает USER-макросы
 #include <windows.h>

@@ -1,6 +1,7 @@
 #pragma once
 
 
+// класс времени для отслеживания игрового времени
 struct Time {
     inline static double time = 0.0;
 

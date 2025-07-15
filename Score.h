@@ -4,6 +4,7 @@
 
 #include <vector>
 
+// Класс
 struct Score {
 	inline static int score = 0; // Current score
 	inline static std::vector<int> highScores = { 0, 0, 0, 0 }; // High scores (Easy, Medium, Hard, Demon)

@@ -15,6 +15,7 @@ double RandInInterval(double min, double max) {
 }
 
 
+
 void MoonSurface::Generate() {
     surfacePoints.clear();
 	stop_generate = false;
