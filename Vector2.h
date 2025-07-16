@@ -2,9 +2,8 @@
 
 #include <cmath>
 
-// 2D Вектор
-class Vector2 {
-public:
+// 2D Vector
+struct Vector2 {
     double x, y;
 
     Vector2(double x_ = 0.0, double y_ = 0.0) : x(x_), y(y_) {}

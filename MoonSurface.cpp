@@ -1,9 +1,8 @@
 #include "MoonSurface.h"
 #include "ShapeRenderer.h"
 #include "Complexity.h"
-#define NOMINMAX
 
-
+// getting a random number on the segment [min, max]
 double RandInInterval(double min, double max) {
     if (min > max) {
         std::swap(min, max);
@@ -14,24 +13,22 @@ double RandInInterval(double min, double max) {
 	return res;
 }
 
-
-
 void MoonSurface::Generate() {
     surfacePoints.clear();
-	stop_generate = false;
+	stopGenerate = false;
 
-    // Первая точка
-    double x = 0;
+    // First point
+    double x = GameData::MOON_SURFACE_START_POINT_X;
     double y = SCREEN_HEIGHT - RandInInterval(GameData::MOON_MIN_HEIGHT_MAP, GameData::MOON_MAX_HEIGHT_MAP);
     surfacePoints.emplace_back(x, y);
 
-    while (!stop_generate) {
+    while (!stopGenerate) {
         double h = SCREEN_HEIGHT - surfacePoints.back().y;
-        double h_max = RandInInterval(h + GameData::MOON_MIN_HEIGHT_MOUNTAIN, GameData::MOON_MAX_HEIGHT_MAP);
-        double h_min = RandInInterval(GameData::MOON_MIN_HEIGHT_MAP, h - GameData::MOON_MIN_HEIGHT_MOUNTAIN);
-		std::vector<double> hLimits = { h_min, h_max };
+        double hMax = RandInInterval(h + GameData::MOON_MIN_HEIGHT_MOUNTAIN, GameData::MOON_MAX_HEIGHT_MAP);
+        double hMin = RandInInterval(GameData::MOON_MIN_HEIGHT_MAP, h - GameData::MOON_MIN_HEIGHT_MOUNTAIN);
+		std::vector<double> hLimits = { hMin, hMax };
 
-        int direction = ChooseDirection(h_min, h_max); // 0 (спад) или 1 (возвышение)
+        int direction = ChooseDirection(hMin, hMax); // 0 (down) или 1 (up)
 
         GeneratePartOfMauntain(hLimits[direction], 2 * direction - 1);
 
@@ -40,65 +37,50 @@ void MoonSurface::Generate() {
     }
 }
 
-// Генерация длины участка поверхности
-double MoonSurface::Rand_length() {
-    return RandInInterval(GameData::MOON_MIN_LENGTH, GameData::MOON_MAX_LENGTH);
-}
-
-// Генерация высоты участка поверхности
-double MoonSurface::Rand_height() {
-    return RandInInterval(GameData::MOON_MIN_HEIGHT, GameData::MOON_MAX_HEIGHT);
-}
-
-// Генерация части горы (возвышение (c = 1) или спад (c = -1))
-void MoonSurface::GeneratePartOfMauntain(double h_limit, int c) {
-    if (stop_generate) return;
+// Generation of a part of the mountain (up (c = 1) or down (c = -1))
+void MoonSurface::GeneratePartOfMauntain(double hLimit, int c) {
+    if (stopGenerate) return;
     bool go = true;
     while (go) {
-        double x = surfacePoints.back().x + Rand_length();
-        double h = SCREEN_HEIGHT - surfacePoints.back().y + c * Rand_height();
-        if (c * h >= c * h_limit) {
-            h = h_limit;
+        double x = surfacePoints.back().x + RandInInterval(GameData::MOON_MIN_LENGTH, GameData::MOON_MAX_LENGTH);
+        double h = SCREEN_HEIGHT - surfacePoints.back().y + 
+                   c * RandInInterval(GameData::MOON_MIN_HEIGHT, GameData::MOON_MAX_HEIGHT);
+        if (c * h >= c * hLimit) {
+            h = hLimit;
             go = false;
         }
         double y = SCREEN_HEIGHT - h;
-        if (x >= SCREEN_WIDTH) {
-            x = SCREEN_WIDTH;
-            stop_generate = true;
+        if (x >= GameData::MOON_SURFACE_FINISH_POINT_X) {
+            x = GameData::MOON_SURFACE_FINISH_POINT_X;
+            stopGenerate = true;
         }
         surfacePoints.emplace_back(x, y);
-        if (stop_generate) return;
+        if (stopGenerate) return;
     }
 }
 
-// Генерация прямого участка горы
+// Generating a straight mountain section
 void MoonSurface::GenerateStraightPartOfMauntain() {
-    if (stop_generate) return;
+    if (stopGenerate) return;
+    const auto& pointsCoeff = GameData::DIFFICULTY_CONFIG.at(Complexity::GetDifficulty()).pointsCoeff;
+    int index = rand() % pointsCoeff.size();
 
-
-	int leftIndex = std::max(int(Complexity::GetDifficulty()) - 1, 0);
-	int rightIndex = std::min(int(Complexity::GetDifficulty()) + 1, int(GameData::MOON_LENGTHS.size()) - 1);
-
-    int index = rand() % GameData::MAP_LINES.at(Complexity::GetDifficulty()).size();
-
-    double x = surfacePoints.back().x + GameData::MOON_LENGTHS[GameData::MAP_LINES.at(Complexity::GetDifficulty())[index] - 1];
+    double x = surfacePoints.back().x + GameData::MOON_LENGTHS[pointsCoeff[index] - 1];
     double y = surfacePoints.back().y;
-    if (x >= SCREEN_WIDTH) {
-        x = SCREEN_WIDTH;
-        stop_generate = true;
+    if (x >= GameData::MOON_SURFACE_FINISH_POINT_X) {
+        x = GameData::MOON_SURFACE_FINISH_POINT_X;
+        stopGenerate = true;
     }
     surfacePoints.emplace_back(x, y);
 }
 
-
 void MoonSurface::Update() {
     if (Complexity::GetDifficulty() == Difficulty::Demon)
-        demonX = (demonX + 1) % SCREEN_WIDTH;
+        demonX = (demonX + 1) % GameData::MOON_SURFACE_FINISH_POINT_X;
 }
 
-// Рисование поверхности Луны
 void MoonSurface::Draw() {
-    for (size_t i = 1; i < surfacePoints.size(); ++i) {
+    for (int i = 1; i < surfacePoints.size(); i++) {
         if (Complexity::GetDifficulty() == Difficulty::Demon) {
             if ((surfacePoints[i].x < demonX ||
                 surfacePoints[i].x > demonX + GameData::DEMONS_RANGE_OF_VIEW))
@@ -108,88 +90,97 @@ void MoonSurface::Draw() {
     }
 }
 
+// Drawing a part of the Moon's surface from point A to point B
 void MoonSurface::DrawPart(const Vector2& A, const Vector2& B) {
-    double surfaceIndex = GetSurfaceIndex(A, B);
+    double surfaceQlty = GetSurfaceQlty(A, B);
 
     double pointsX = (A.x + B.x) / 2 -
-        PIXELFONT_W * (GameData::STRING_POINTS[surfaceIndex].length() + 1);
+        PIXELFONT_W * (GameData::STRING_POINTS[surfaceQlty].length() + 1);
     double pointsY = B.y + GameData::POINTS_INFO_MARGIN_Y;
 
     ShapeRenderer::DrawText(pointsX, pointsY,
-        GameData::STRING_POINTS[surfaceIndex], GameData::COLOR_POINTS[surfaceIndex], GameData::POINTS_SCALE);
+        GameData::STRING_POINTS[surfaceQlty], GameData::COLOR_POINTS[surfaceQlty], GameData::POINTS_SCALE);
 
-    ShapeRenderer::DrawLine(A, B, GameData::COLOR_POINTS[surfaceIndex]);
+    ShapeRenderer::DrawLine(A, B, GameData::COLOR_POINTS[surfaceQlty]);
 }
 
+// Checking the object's collision with the surface
+bool MoonSurface::CheckCollision(const std::vector<Vector2>& objectShape, SurfaceQlty& surfaceQlty) {
+    // Finding the lowest points
+    Vector2 left = objectShape[0];
+    Vector2 right = objectShape[0];
 
-// Проверка коллизии ракеты с поверхностью
-bool MoonSurface::CheckCollision(const Vector2& rocketPos, const Vector2& rocketDir, int& surfaceIndex) {
-    // 1. Получаем три вершины ракеты (нос, левый и правый угол)
-    Vector2 nose = rocketPos + rocketDir * (GameData::ROCKET_HEIGHT / 2);
-    Vector2 left = rocketPos - rocketDir * (GameData::ROCKET_HEIGHT / 2) +
-        Vector2(-rocketDir.y, rocketDir.x) * (GameData::ROCKET_WIDTH / 2);
-    Vector2 right = rocketPos - rocketDir * (GameData::ROCKET_HEIGHT / 2) +
-        Vector2(-rocketDir.y, rocketDir.x) * (-GameData::ROCKET_WIDTH / 2);
-
-
-    std::pair<Vector2, Vector2> leftSurface = GetSurfaceUnderRocket(left);
-	std::pair<Vector2, Vector2> rightSurface = GetSurfaceUnderRocket(right);
-
-    int leftSurfaceIndex = GetSurfaceIndex(leftSurface.first, leftSurface.second);
-	int rightSurfaceIndex = GetSurfaceIndex(rightSurface.first, rightSurface.second);
-
-	surfaceIndex = (leftSurfaceIndex == rightSurfaceIndex) ? leftSurfaceIndex : 0;
-
-    // 2. Проверяем каждую точку ракеты на пересечение с поверхностью
-    return IsPointUnderSurface(nose) ||
-        IsPointUnderSurface(left) ||
-        IsPointUnderSurface(right);
-}
-
-int MoonSurface::GetSurfaceIndex(const Vector2& A, const Vector2& B) {
-    if (A.y != B.y) return 0;
-    double length = std::abs(B.x - A.x);
-    if (length > GameData::MOON_LENGTH_X1)
-        return -1;
-    else if (length > GameData::MOON_LENGTH_X2)
-        return 1;
-    else if (length > GameData::MOON_LENGTH_X3)
-        return 2;
-    else
-        return 3;
-}
-
-// Вспомогательная функция: проверяет, находится ли точка под поверхностью
-bool MoonSurface::IsPointUnderSurface(const Vector2& point) {
-    return GetAltitudeAboveMoon(point) <= 0;
-}
-
-// Получение высоты ракеты над поверхностью Луны
-double MoonSurface::GetAltitudeAboveMoon(const Vector2& rocketPos) {
-    std::pair<Vector2, Vector2> surface = GetSurfaceUnderRocket(rocketPos);
-    double t = (rocketPos.x - surface.first.x) / (surface.second.x - surface.first.x);
-    double surfaceY = surface.first.y + t * (surface.second.y - surface.first.y);
-    return surfaceY - rocketPos.y; // Высота над поверхностью
-}
-
-std::pair<Vector2, Vector2> MoonSurface::GetSurfaceUnderRocket(const Vector2& rocketPos) {
-    for (size_t i = 1; i < surfacePoints.size(); ++i) {
-        if (rocketPos.x >= surfacePoints[i - 1].x && rocketPos.x <= surfacePoints[i].x)
-			return { surfacePoints[i - 1], surfacePoints[i] };
+    for (const auto& point : objectShape) {
+        if (point.y > left.y) {
+            left = right = point;
+        }
+        else if (point.y == left.y) {
+            if (point.x < left.x) left = point;
+            if (point.x > right.x) right = point;
+        }
     }
 
+    std::pair<Vector2, Vector2> leftSurfacePair = GetSurfaceUnderObject(left);
+    std::pair<Vector2, Vector2> rightSurfacePair = GetSurfaceUnderObject(right);
+
+    SurfaceQlty leftSurfaceQlty = GetSurfaceQlty(leftSurfacePair.first, leftSurfacePair.second);
+    SurfaceQlty rightSurfaceQlty = GetSurfaceQlty(rightSurfacePair.first, rightSurfacePair.second);
+
+    surfaceQlty = (leftSurfaceQlty == rightSurfaceQlty) ? leftSurfaceQlty : SurfaceQlty::Common;
+
+    for (const auto& point : objectShape) {
+        if (IsPointUnderSurface(point))
+            return true;
+    }
+    return false;
 }
 
-// 0 (спад) или 1 (возвышение)
-int MoonSurface::ChooseDirection(double h_min, double h_max) {
-    if (h_min <= double(GameData::MOON_MIN_HEIGHT_MAP))
+// Getting quality of part of surface
+SurfaceQlty MoonSurface::GetSurfaceQlty(const Vector2& A, const Vector2& B) {
+    if (A.y != B.y) return SurfaceQlty::Common;
+    double length = std::abs(B.x - A.x);
+    if (length > GameData::MOON_LENGTHS[0])
+        return SurfaceQlty::Common;
+    else if (length > GameData::MOON_LENGTHS[1])
+        return SurfaceQlty::PointsX1;
+    else if (length > GameData::MOON_LENGTHS[2])
+        return SurfaceQlty::PointsX2;
+    else
+        return SurfaceQlty::PointsX3;
+}
+
+// Checking if the point is under the surface
+bool MoonSurface::IsPointUnderSurface(const Vector2& point) {
+    return GetAltitudeAboveMoon(point) <= 0.0;
+}
+
+// Getting the height of an object above the Moon's surface
+double MoonSurface::GetAltitudeAboveMoon(const Vector2& objectPos) {
+    std::pair<Vector2, Vector2> surfacePair = GetSurfaceUnderObject(objectPos);
+    double t = (objectPos.x - surfacePair.first.x) / (surfacePair.second.x - surfacePair.first.x);
+    double surfaceY = surfacePair.first.y + t * (surfacePair.second.y - surfacePair.first.y);
+    return surfaceY - objectPos.y; // Height above the surface
+}
+
+// Getting the surface (2 points) under the object
+std::pair<Vector2, Vector2> MoonSurface::GetSurfaceUnderObject(const Vector2& objectPos) {
+    for (int i = 1; i < surfacePoints.size(); i++) {
+        if (objectPos.x >= surfacePoints[i - 1].x && objectPos.x <= surfacePoints[i].x)
+			return { surfacePoints[i - 1], surfacePoints[i] };
+    }
+}
+
+// Getting the direction of the next mountain (0 (down) or 1 (up))
+int MoonSurface::ChooseDirection(double hMin, double hMax) {
+    if (hMin <= double(GameData::MOON_MIN_HEIGHT_MAP))
         return 1;
-    else if (h_max >= double(GameData::MOON_MAX_HEIGHT_MAP))
+    else if (hMax >= double(GameData::MOON_MAX_HEIGHT_MAP))
         return 0;
     else
         return rand() % 2;
 }
-// Инициализация статических членов MoonSurface
+
+// Initializing static MoonSurface members
 std::vector<Vector2> MoonSurface::surfacePoints;
-bool MoonSurface::stop_generate = false;
+bool MoonSurface::stopGenerate = false;
 int MoonSurface::demonX = 0;

@@ -1,38 +1,29 @@
 #include "HUD.h"
-#include "pixel_font.h"
 #include "ShapeRenderer.h"
 #include "Score.h"
 #include "Complexity.h"
 #include "Time.h"
 #include "GameLogic.h"
 #include "Rocket.h"
-
-
+#include "GameData.h"
 
 #include <sstream>
 #include <iomanip>
 
 
 void HUD::Draw() {
-    Vector2 pos = Rocket::GetPosition();
-    Vector2 velocity = Rocket::GetVelocity();
-	double speed = velocity.Length();
-    double angle = Rocket::GetAngleDegrees();
-    double altitude = Rocket::GetAltitude();
-    double thrust = Rocket::GetThrust();
-
-    // Левый блок (скорости и высота)
+    // Left block (rocket parameters)
     std::vector<std::string> leftText = {
-        "Speed X: " + FormatValue(velocity.x * GameData::HUD_VAL_SCALE),
-        "Speed Y: " + FormatValue(velocity.y * GameData::HUD_VAL_SCALE),
-        "Angle: " + FormatValue(angle) + "°",
-        "Altitude: " + FormatValue(altitude * GameData::HUD_VAL_SCALE),
+        "Speed X: " + FormatValue(Rocket::GetVelocity().x * GameData::HUD_VAL_SCALE),
+        "Speed Y: " + FormatValue(Rocket::GetVelocity().y * GameData::HUD_VAL_SCALE),
+        "Angle: " + FormatValue(Rocket::GetAngleDegrees()) + "°",
+        "Altitude: " + FormatValue(Rocket::GetAltitude() * GameData::HUD_VAL_SCALE),
         "Fuel: " + FormatValue(Rocket::GetFuel()) + " L",
-        "Thrust: " + FormatValue(thrust * 100) + "%"
+		"Thrust: " + FormatValue(Rocket::GetThrust() * 100) + "%" // percentage
     };
     DrawTextBlock(GameData::HUD_PADDING_LEFT_X, GameData::HUD_PADDING_LEFT_Y, leftText);
 
-    // Правый блок (угол и тяга)
+    // Right block (interface hints, points, difficulty, and time)
     std::vector<std::string> rightText = {
         "Quit game: ESC",
         "Pause: SPACE",
@@ -40,41 +31,44 @@ void HUD::Draw() {
         " ",
         "Score: " + FormatValue(Score::score),
 		"High Scores: " + FormatValue(Score::highScores[int(Complexity::GetDifficulty())]),
-		"Difficulty: " + Complexity::GetDifficultyName(),
+		"Difficulty: " + GameData::DIFFICULTY_CONFIG.at(Complexity::GetDifficulty()).name,
         "Time: " + FormatValue(Time::time) + " s"
     };
     DrawTextBlock(GameData::HUD_PADDING_RIGHT_X, GameData::HUD_PADDING_RIGHT_Y, rightText);
 
-    // Отрисовка индикатора тяги
+    // Drawing a thrust bar
     DrawBar(GameData::HUD_PADDING_LEFT_X, GameData::HUD_PADDING_RIGHT_Y + leftText.size() * 
-        GameData::HUD_FONT_SIZE, GameData::HUD_BAR_WIDTH, GameData::HUD_BAR_HEIGHT, thrust);
+        GameData::HUD_MARGIN_Y, GameData::HUD_BAR_WIDTH, GameData::HUD_BAR_HEIGHT, Rocket::GetThrust());
 
-    if (GameLogic::isPause) // 930
-        HUD::DrawPause(750, GameData::HUD_PADDING_RIGHT_Y + GameData::HUD_FONT_SIZE, 1, GameData::GRAY);
-
+    // Drawing a pause icon
+    if (GameLogic::isPause)
+        HUD::DrawPause(GameData::HUD_PAUSE_ICON_POSITION, GameData::HUD_PADDING_RIGHT_Y + GameData::HUD_MARGIN_Y,
+                       GameData::HUD_PAUSE_ICON_SIZE, GameData::HUD_PAUSE_ICON_COLOR);
 }
 
+// Formatting a value with a given precision
 std::string HUD::FormatValue(double value, int precision) {
     std::ostringstream oss;
     oss << std::fixed << std::setprecision(precision) << value;
     return oss.str();
 }
 
-
-
+// Drawing a block of text
 void HUD::DrawTextBlock(int x, int y, const std::vector<std::string>& lines) {
-    for (int i = 0; i < lines.size(); ++i) {
-        ShapeRenderer::DrawText(x, y + i * GameData::HUD_FONT_SIZE, lines[i], GameData::HUD_TEXT_COLOR, 2);
+    for (int i = 0; i < lines.size(); i++) {
+        ShapeRenderer::DrawText(x, y + i * GameData::HUD_MARGIN_Y, lines[i],
+                                GameData::HUD_TEXT_COLOR, GameData::HUD_SCALE_COMMON);
     }
 }
 
-
+// Drawing a bar with a value (0...1)
 void HUD::DrawBar(int x, int y, int width, int height, float value) {
-    ShapeRenderer::DrawRect(x, y, width, height, GameData::HUD_BAR_EMPTY_COLOR); // Серый фон
-    ShapeRenderer::DrawRect(x, y, int(width * value), height, GameData::HUD_BAR_COLOR); // Зелёный заполнитель
+    ShapeRenderer::DrawRect(x, y, width, height, GameData::HUD_BAR_EMPTY_COLOR); // background
+    ShapeRenderer::DrawRect(x, y, int(width * value), height, GameData::HUD_BAR_COLOR); // filling
 }
 
+// Drawing a pause icon
 void HUD::DrawPause(int x, int y, int size, uint32_t color) {
-    ShapeRenderer::DrawTriangle(Vector2(x, y), Vector2(x + size * 10, y + size * 5),
-                                Vector2(x, y + size * 10), color);
+    ShapeRenderer::DrawTriangle(Vector2(x, y), Vector2(x + size, y + size / 2),
+                                Vector2(x, y + size), color);
 }

@@ -3,29 +3,29 @@
 
 #include "Rocket.h"
 #include "MoonSurface.h"
+#include "Explosion.h"
 #include "Score.h"
 #include "Vector2.h"
 #include "Time.h"
+#include "GameData.h"
 
-
-#define NOGDI              // Отключает GDI-макросы
-#define NOUSER             // Отключает USER-макросы
 #include <windows.h>
-#undef DrawText           // Отменяем макрос DrawText
+#undef DrawText
 #include <algorithm>
 
 
-
+// (singleton)
 struct GameLogic {
     inline static bool isPause = false;
 
+	// On/off pause
     static void pause() {
-        Sleep(200);
+        Sleep(GameData::SLEEP_PAUSE_TIME);
         isPause = 1 - isPause;
     }
 
     static void initializeNewLevel() {
-        Sleep(200);
+        Sleep(GameData::SLEEP_LEVEL_TIME);
         MoonSurface::Generate();
         Rocket::Initialize();
     }
@@ -36,26 +36,28 @@ struct GameLogic {
         initializeNewLevel();
     }
 
+	// Upgrade the level according to the logic of the game
+    static void LevelUpdate() {
+        if (!Rocket::IsAlive()) {
+            if (!Explosion::IsActive())
+                initializeNewSession();
+            return;
+		}
 
-    static void gameLevelUpdate() {
-        // Коллизия с поверхностью
-        int surfaceIndex = -1;
-        if (MoonSurface::CheckCollision(Rocket::GetPosition(), Rocket::GetDirection(), surfaceIndex)) {
-            if (surfaceIndex > 0 && Rocket::GetAltitude() < 4.0 && std::abs(Rocket::GetAngleDegrees()) < 7.0 
-                && Rocket::GetVelocity().Length() < 50) {
-                //std::cout << "Rocket landed successfully!" << std::endl;
-                Score::AddScore(surfaceIndex * 10);
-                Sleep(1000);
+        // Collision with the surface causes the end of the level
+        SurfaceQlty surfaceQlt = SurfaceQlty::Common;
+        if (MoonSurface::CheckCollision(Rocket::GetShape(), surfaceQlt)) {
+            if (surfaceQlt != SurfaceQlty::Common && Rocket::GetAltitude() < GameData::SUCCESSFUL_LANDED_HEIGHT
+                && std::abs(Rocket::GetAngleDegrees()) < GameData::SUCCESSFUL_LANDED_ANGLE
+                && Rocket::GetVelocity().Length() < GameData::SUCCESSFUL_LANDED_VELOCITY) {
+                //Rocket landed successfully!
+                Score::AddScore(int(surfaceQlt) * GameData::POINT_MODIFIER);
                 initializeNewLevel();
             }
-            else {
+            else
                 Rocket::Destroy();
-
-            }
         }
-
     }
-
 };
 
 

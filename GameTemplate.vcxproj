@@ -152,7 +152,7 @@
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="HUD.h" />
     <ClInclude Include="MoonSurface.h" />
-    <ClInclude Include="pixel_font.h" />
+    <ClInclude Include="PixelFont.h" />
     <ClInclude Include="Rocket.h" />
     <ClInclude Include="Score.h" />
     <ClInclude Include="ShapeRenderer.h" />

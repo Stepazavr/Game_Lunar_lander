@@ -2,10 +2,10 @@
 
 #include "Engine.h"
 #include "Complexity.h"
+#include "Vector2.h"
 
 #include <vector>
 #include <map>
-
 
 
 #define PI 3.14159265358979323846
@@ -13,119 +13,155 @@
 #define PIXELFONT_W 5
 
 
-// Класс для хранения всех констант
+namespace Color {
+    constexpr uint32_t WHITE = 0xFFFFFFFF;
+    constexpr uint32_t GRAY = 0xFF808080;
+    constexpr uint32_t ORANGE = 0xFFFFA500;
+    constexpr uint32_t DARK_ORANGE = 0xFFFFA500;
+    constexpr uint32_t GREEN = 0xFF00FF00;
+    constexpr uint32_t RED = 0xFFB22222;
+    constexpr uint32_t RED_2 = 0xFFc22542;
+	constexpr uint32_t BLUE = 0xFF0008ff;
+	constexpr uint32_t Violet = 0xFF4b36d6;
+	constexpr uint32_t PINK = 0xFF8c1bb5;
+};
+
+// Namespace for all constants
 namespace GameData {
-    // Константы экрана
-    constexpr double SCREEN_CENTER_X = SCREEN_WIDTH / 2.0;
-    constexpr double SCREEN_CENTER_Y = SCREEN_HEIGHT / 2.0;
 
-    // Стартовая позиция ракеты
+    // Constants of the game window
+    constexpr double WINDOW_MARGIN_X = 20.0; // X-offset (this is where the game area begins)
+    constexpr double WINDOW_MARGIN_Y = 40.0; // Y-offset
+
+    // Rocket launch position
     constexpr double START_ROCKET_X = SCREEN_WIDTH / 2.0;
-    constexpr double START_ROCKET_Y = 40.0;
+    constexpr double START_ROCKET_Y = WINDOW_MARGIN_Y + 0.0;
 
-    // Параметры ракеты
+    // Geometric parameters of the rocket
     constexpr double ROCKET_HEIGHT = 40.0;
     constexpr double ROCKET_WIDTH = 30.0;
-    constexpr double WINDOW_RADIUS = 5.0;
-    constexpr double WINDOW_OFFSET_Y = 0.0;
+    constexpr double PORTHOLE_RADIUS = 5.0;
+    constexpr double PORTHOLE_OFFSET_Y = 0.0;
 
-    // Параметры пламени
+    // Geometric parameters of flame
     constexpr double FLAME_MAX_HEIGHT = 20.0;
     constexpr double FLAME_MAX_WIDTH = 15.0;
 
-    // Физические параметры
-    constexpr double INITIAL_SPEED = 100.0;
-    constexpr double GRAVITY = 50.0;
-    constexpr double WINDOW_MARGIN_X = 20.0;
-    constexpr double WINDOW_MARGIN_Y = 40.0;
-    constexpr double ROTATION_SPEED = 3.0;       // Скорость поворота
-    constexpr double MAX_THRUST_FORCE = 200.0;   // Максимальная сила тяги
-    constexpr double THRUST_MIN_VAL = 0.01;
-    constexpr double MAX_THRUST = 1.0;
-    constexpr double THRUST_SPEED = 5.0;
-	constexpr double FUEL_CONSUMPTION_RATE = 10; // Расход топлива с секунду
-    const std::vector<double> FUEL_MAX = { 120.0, 60.0, 30.0, 45.0 }; // Максимальное количество топлива (Easy, Medium, Hard, Demon)
-    const std::map<Difficulty, std::vector<int>> MAP_LINES  = {
-        { Difficulty::Easy, { 1, 2 } },
-        { Difficulty::Medium, { 1, 2, 3 } },
-        { Difficulty::Hard, { 2, 3 } },
-        { Difficulty::Demon, { 2, 3 } }
-	};
-	constexpr double DEMONS_RANGE_OF_VIEW = 80.0; // Диапазон обзора для демона
+    // Physical parameters of the rocket
+	constexpr double ROTATION_SPEED = 3.0;       // Rotation speed [rad/s]
+    constexpr double MAX_THRUST_FORCE = 200.0;   // Maximum thrust force [pixels/s^2]
+	constexpr double THRUST_MIN_VAL = 0.01;      // Threshold value for the existence of thrust
+	constexpr double THRUST_SPEED = 5.0;         // Thrust speed (acceleration jerk) [pixels/s^3]
+    constexpr double FUEL_CONSUMPTION_RATE = 10; //  Fuel consumption [L/s]
+
+    // Rocket color parameters
+    constexpr uint32_t PORTHOLE_COLOR = Color::WHITE; // Белый
+    constexpr uint32_t FLAME_COLOR = Color::ORANGE;  // Оранжевый
+
+	// Common Logical constants
+	constexpr double GRAVITY = 50.0; // [pixels/^2]
+
+    // Geometric parameters of the Moon surface
+	constexpr int MOON_MIN_HEIGHT_MAP = 100;  // Minimum height of the surface on the screen
+	constexpr int MOON_MAX_HEIGHT_MAP = 400;  // Maximum height of the surface on the screen
+	constexpr int MOON_MIN_HEIGHT_MOUNTAIN = 50; // Minimum height of the mountain
+	constexpr int MOON_MIN_LENGTH = 5; // Minimum length of the part of surface
+    constexpr int MOON_MAX_LENGTH = 10; // Maximum length of the part of surface
+	constexpr int MOON_MIN_HEIGHT = 5; // Minimum height of the part of surface
+    constexpr int MOON_MAX_HEIGHT = 10; // Maximum height of the part of surface
+    constexpr int MOON_SURFACE_START_POINT_X = 0; // The initial X coordinate for the Moon's surface
+    constexpr int MOON_SURFACE_FINISH_POINT_X = SCREEN_WIDTH; // The final X coordinate for the Moon's surface
+    // The length of the part of surface with the coefficient of points { x1, x2, x3 }
+    const std::vector<int> MOON_LENGTHS = { 120, 60, 40 };
+	const int MAX_ALLOWED_STRAIGHT_X = MOON_SURFACE_FINISH_POINT_X - MOON_LENGTHS[0]; // The maximum X coordinate for the straight part of the surface
+    
+
+    // Moon color parameters
+    constexpr uint32_t MOON_COLOR = Color::WHITE;
+	
+
+    // Points' parametrs
+    constexpr int POINTS_INFO_MARGIN_Y = 15; // Y-indentation for information about points
+    constexpr double POINTS_SCALE = 2; // Scale of the points symbols
+    const std::vector<uint32_t> COLOR_POINTS = { MOON_COLOR,
+                                                 Color::GREEN,
+                                                 Color::DARK_ORANGE,
+                                                 Color::RED
+                                                }; // Colors for points
+
+    constexpr double DEMONS_RANGE_OF_VIEW = 80.0; // Viewing range for difficulty:demon
 
 
-    // Цвета
-	constexpr uint32_t WHITE = 0xFFFFFFFF; // Белый
-	constexpr uint32_t BLACK = 0xFF000000; // Чёрный
-    constexpr uint32_t BLACK_2 = 0x80000000;  // Полупрозрачный чёрный
-	constexpr uint32_t GRAY = 0xFF808080; // Серый
-    constexpr uint32_t DARK_GRAY = 0x80404040; // темно-серый
-    constexpr uint32_t DARK_ORANGE_1 = 0xFF8B4500;  // Тёмный оранжевый
-    constexpr uint32_t DARK_ORANGE_2 = 0xFFCD6600;  // Средний тёмно-оранжевый
-    constexpr uint32_t DARK_ORANGE_3 = 0xFFFF8C00;  // Насыщенный тёмный оранжевый
-    constexpr uint32_t ORANGE = 0xFFFFA500;  // Оранжевый
-    constexpr uint32_t DARK_ORANGE = 0xFFFFA500;  // темно-оранжевый
-    constexpr uint32_t DARK_BLUE = 0xFF0000FF; // Синий
-    constexpr uint32_t GREEN = 0xFF00FF00; // Зеленый цвет
-    constexpr uint32_t RED_1 = 0xFFFF0000;    // Ярко-красный 
-    constexpr uint32_t RED_2 = 0xFFDC143C;    // Карминный 
-    constexpr uint32_t RED_3 = 0xFFB22222;    // Огненно-красный 
-    constexpr uint32_t DARK_RED = 0xFF8B0000;    // Тёмно-красный 
+    // Geometric interface parameters
+    constexpr int HUD_MARGIN_Y = 30; // Y-coordinate distance between lines of text
+    constexpr int HUD_MARGIN_X = 1; // X-coordinate distance between symbols of text
+    constexpr int HUD_SCALE_COMMON = 2; // Scaling the interface
 
-
-
-    constexpr uint32_t ROCKET_COLOR = DARK_BLUE; // Синий
-    constexpr uint32_t WINDOW_COLOR = WHITE; // Белый
-    constexpr uint32_t FLAME_COLOR = ORANGE;  // Оранжевый
-
-
-    // Параметры лунной поверхности
-    constexpr int MOON_MIN_HEIGHT_MAP = 100;  // Минимальная высота поверхности
-    constexpr int MOON_MAX_HEIGHT_MAP = 400;  // Максимальная высота поверхности
-	constexpr int MOON_MIN_HEIGHT_MOUNTAIN = 50; // Минимальная высота горы
-	constexpr int MOON_MIN_LENGTH = 5; // Минимальная длина участка поверхности
-    constexpr int MOON_MAX_LENGTH = 10; // Максимальная длина участка поверхности
-	constexpr int MOON_MIN_HEIGHT = 5; // Минимальная высота участка поверхности
-    constexpr int MOON_MAX_HEIGHT = 10; // Максимальная высота участка поверхности
-	constexpr int MOON_LENGTH_X1 = 120; // Длина учатка с коэффициентом очков x1
-    constexpr int MOON_LENGTH_X2 = 60; // Длина учатка с коэффициентом очков x2
-    constexpr int MOON_LENGTH_X3 = 40; // Длина учатка с коэффициентом очков x3
-    constexpr int MAX_ALLOWED_STRAIGHT_X = SCREEN_WIDTH - MOON_LENGTH_X1;
-    constexpr uint32_t MOON_COLOR = 0xFFFFFFFF; // Белый цвет поверхности
-	constexpr uint32_t MOON_LANDING_COLOR = GREEN; // Зеленый цвет для безопасной посадки
-	constexpr uint32_t POINTS_INFO_COLOR = DARK_BLUE; // Синий цвет для информации о очках
-	constexpr int POINTS_INFO_MARGIN_Y = 15; // Отступ по Y для информации о очках
-    const std::vector<double> MOON_LENGTHS = { GameData::MOON_LENGTH_X1, GameData::MOON_LENGTH_X2,
-                                    GameData::MOON_LENGTH_X3 };
-
-    const std::vector<std::string> STRING_POINTS = { "", "+10", "+20", "+30" };
-    constexpr double POINTS_SCALE = 2;
-    const std::vector<uint32_t> COLOR_POINTS = { GameData::MOON_COLOR, GameData::GREEN,
-    GameData::DARK_ORANGE, GameData::RED_3 }; // Цвета для очков 
-
-    // Цвета и параметры интерфейса
-    constexpr uint32_t HUD_TEXT_COLOR = WHITE; // Белый
-    constexpr uint32_t HUD_BG_COLOR = BLACK_2;  // Полупрозрачный чёрный
-    constexpr int HUD_PADDING_LEFT_X = 30;
+    // Indentation for the left block
+    constexpr int HUD_PADDING_LEFT_X = 30; 
 	constexpr int HUD_PADDING_LEFT_Y = 30;
+
+    // Indentation for the right block
 	constexpr int HUD_PADDING_RIGHT_X = SCREEN_WIDTH - 250;
 	constexpr int HUD_PADDING_RIGHT_Y = 30;
-    constexpr int HUD_FONT_SIZE = 30;
+
+    // Bar parameters
     constexpr int HUD_BAR_WIDTH = 100;
     constexpr int HUD_BAR_HEIGHT = 10;
-    constexpr uint32_t HUD_BAR_EMPTY_COLOR = GRAY;
-    constexpr uint32_t HUD_BAR_COLOR = GREEN;
-	constexpr double HUD_VAL_SCALE = 0.1;
+
+	// Other interface parameters
+	constexpr double HUD_VAL_SCALE = 0.1; // the scaling factor of the values in the interface
+
+	// Pause icon parameters
+	constexpr int HUD_PAUSE_ICON_POSITION= 750; // Position for the pause icon
+	constexpr int HUD_PAUSE_ICON_SIZE = 10; // The size of the pause icon
+
+    // Interface color parameters
+    constexpr uint32_t HUD_TEXT_COLOR = Color::WHITE;
+    constexpr uint32_t HUD_BAR_EMPTY_COLOR = Color::GRAY;
+    constexpr uint32_t HUD_BAR_COLOR = Color::GREEN;
+	constexpr uint32_t HUD_PAUSE_ICON_COLOR = Color::GRAY;
 
 
-    // Константы для взрыва
-    constexpr int EXPLOSION_PARTICLES_COUNT = 50; // Количество частиц взрыва
-    constexpr double EXPLOSION_DURATION = 1.0; // Длительность взрыва в секундах
-    constexpr double EXPLOSION_MIN_SPEED = 50.0; // Минимальная скорость частиц взрыва
-	constexpr double EXPLOSION_MAX_SPEED = 150.0; // Максимальная скорость частиц взрыва
-	constexpr int EXPLOSION_MAX_SIZE = 12; // Максимальный размер частиц взрыва
-    constexpr int EXPLOSION_MIN_SIZE = 1; // Минимальный размер частиц взрыва
-    constexpr uint32_t EXPLOSION_COLOR = ORANGE; // Цвет взрыва
-	constexpr uint32_t EXPLOSION__COLOR_2 = RED_3; // Вторичный цвет взрыва
-	constexpr double COEFF_CHANGE_COLOR = 0.5; // Коэффициент изменения цвета взрыва
+    // Explosion parameters
+    constexpr int EXPLOSION_PARTICLES_COUNT = 50; // Number of explosion particles
+    constexpr double EXPLOSION_DURATION = 1.0; // Duration of the explosion in seconds
+    constexpr double EXPLOSION_MIN_SPEED = 50.0; // Minimum particle velocity of the explosion
+	constexpr double EXPLOSION_MAX_SPEED = 150.0; // Maximum particle velocity of the explosion
+    constexpr int EXPLOSION_MIN_SIZE = 1; // Minimum particle size of the explosion
+	constexpr int EXPLOSION_MAX_SIZE = 12; // Maximum particle size of the explosion
+	constexpr double COEFF_CHANGE_COLOR = 0.5; // The time factor for changing the color of the explosion
+
+    // Explosion color parameters
+    constexpr uint32_t EXPLOSION_COLOR = Color::ORANGE; // The first color of the explosion
+    constexpr uint32_t EXPLOSION_COLOR_2 = Color::RED; // The second color of the explosion
+
+	// Game logic parameters
+	constexpr double SUCCESSFUL_LANDED_HEIGHT = 4.0; // Maximum height for a successful landing
+	constexpr double SUCCESSFUL_LANDED_ANGLE = 7.0; // Maximum angle deviation for a successful landing
+	constexpr double SUCCESSFUL_LANDED_VELOCITY = 50.0; // Maximum speed for a successful landing
+    constexpr int POINT_MODIFIER = 10; // The points modifier for a successful landing
+
+	// Game session parameters
+    constexpr int SLEEP_LEVEL_TIME = 200; // Waiting time in milliseconds between levels
+    constexpr int SLEEP_PAUSE_TIME = 200; // Waiting time in milliseconds when paused
+    
+
+
+    // Difficulty Parameters
+    const std::map<Difficulty, DifficultyParams> DIFFICULTY_CONFIG = {
+    { Difficulty::Easy, {120.0, {1, 2}, "Easy", Color::BLUE}},
+    { Difficulty::Medium, {60.0, {1, 2, 3}, "Medium", Color::Violet}},
+    { Difficulty::Hard, {30.0, {2, 3}, "Hard", Color::PINK}},
+    { Difficulty::Demon, {45.0, {2, 3}, "DEMON", Color::RED_2}}
+    };
+
+    // Common constants
+    const Vector2 GRAVITY_ACCELERATION = { 0.0, GameData::GRAVITY };
+    const std::vector<std::string> STRING_POINTS = {
+                                                    "",
+                                                    "+" + std::to_string(POINT_MODIFIER * 1),
+                                                    "+" + std::to_string(POINT_MODIFIER * 2),
+                                                    "+" + std::to_string(POINT_MODIFIER * 3)
+                                                    };
 };

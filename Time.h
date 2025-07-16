@@ -1,7 +1,6 @@
 #pragma once
-
-
-// класс времени для отслеживания игрового времени
+ 
+// class Time for tracking game time (singleton)
 struct Time {
     inline static double time = 0.0;
 
@@ -13,4 +12,3 @@ struct Time {
         time = 0.0;
     }
 };
-
