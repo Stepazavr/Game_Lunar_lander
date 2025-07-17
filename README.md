@@ -23,10 +23,6 @@
     - **Win32 API**
     - **Github** as version control system
     
-    ### Ссылка на Github
-    
-    https://github.com/Stepazavr/Game_Lunar_lander
-    
     ### **Геймплей Lunar lander**
   
     ![Геймплей игры Gobblet](https://github.com/Stepazavr/Game_Lunar_lander/blob/main/lunar_lander.gif?raw=true)
