@@ -113,7 +113,7 @@ namespace GameData {
 	constexpr double HUD_VAL_SCALE = 0.1; // the scaling factor of the values in the interface
 
 	// Pause icon parameters
-	constexpr double HUD_PAUSE_ICON_POSITION= 75.00; // Position for the pause icon
+	constexpr double HUD_PAUSE_ICON_POSITION= 750.0; // Position for the pause icon
 	constexpr int HUD_PAUSE_ICON_SIZE = 10; // The size of the pause icon
 
     // Interface color parameters
