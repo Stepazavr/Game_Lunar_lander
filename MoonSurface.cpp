@@ -75,9 +75,11 @@ void MoonSurface::GenerateStraightPartOfMauntain() {
     surfacePoints.emplace_back(x, y);
 }
 
-void MoonSurface::Update() {
-    if (Complexity::GetDifficulty() == Difficulty::Demon)
-        demonX = int(demonX + 1) % int(GameData::MOON_SURFACE_FINISH_POINT_X);
+void MoonSurface::Update(double dt) {
+    if (Complexity::GetDifficulty() == Difficulty::Demon) {
+        demonX += GameData::DEMON_SCROLL_SPEED * dt;
+        demonX = fmod(demonX, GameData::MOON_SURFACE_FINISH_POINT_X);
+    }
 }
 
 void MoonSurface::Draw() {

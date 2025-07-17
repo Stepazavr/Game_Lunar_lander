@@ -30,7 +30,7 @@ void act(float dt) {
     if (GameLogic::isPause) return;
 
     Time::AddTime(double(dt));
-    MoonSurface::Update();
+    MoonSurface::Update(double(dt));
 
     if (Rocket::IsAlive()) 
         Rocket::Update(double(dt));

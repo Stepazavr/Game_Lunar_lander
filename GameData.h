@@ -90,6 +90,7 @@ namespace GameData {
                                                 }; // Colors for points
 
     constexpr double DEMONS_RANGE_OF_VIEW = 80.0; // Viewing range for difficulty:demon
+	constexpr double DEMON_SCROLL_SPEED = 420.0; // Speed of scrolling the demon's surface [pixels/s]
 
 
     // Geometric interface parameters

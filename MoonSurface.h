@@ -24,7 +24,7 @@ private:
 
 public:
     static void Generate();
-	static void Update();
+	static void Update(double dt);
     static void Draw();
 
     // Checking the object's collision with the surface
