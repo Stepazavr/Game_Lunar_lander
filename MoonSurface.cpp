@@ -16,6 +16,7 @@ double RandInInterval(double min, double max) {
 void MoonSurface::Generate() {
     surfacePoints.clear();
 	stopGenerate = false;
+    demonX = 0.0;
 
     // First point
     double x = GameData::MOON_SURFACE_START_POINT_X;
@@ -76,7 +77,7 @@ void MoonSurface::GenerateStraightPartOfMauntain() {
 
 void MoonSurface::Update() {
     if (Complexity::GetDifficulty() == Difficulty::Demon)
-        demonX = (demonX + 1) % GameData::MOON_SURFACE_FINISH_POINT_X;
+        demonX = int(demonX + 1) % int(GameData::MOON_SURFACE_FINISH_POINT_X);
 }
 
 void MoonSurface::Draw() {
@@ -183,4 +184,4 @@ int MoonSurface::ChooseDirection(double hMin, double hMax) {
 // Initializing static MoonSurface members
 std::vector<Vector2> MoonSurface::surfacePoints;
 bool MoonSurface::stopGenerate = false;
-int MoonSurface::demonX = 0;
+double MoonSurface::demonX = 0.0;

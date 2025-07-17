@@ -29,8 +29,8 @@ void HUD::Draw() {
         "Pause: SPACE",
         "Change difficulty: C",
         " ",
-        "Score: " + FormatValue(Score::score),
-		"High Scores: " + FormatValue(Score::highScores[int(Complexity::GetDifficulty())]),
+        "Score: " + FormatValue(Score::score, 0),
+		"High Scores: " + FormatValue(Score::highScores[int(Complexity::GetDifficulty())], 0),
 		"Difficulty: " + GameData::DIFFICULTY_CONFIG.at(Complexity::GetDifficulty()).name,
         "Time: " + FormatValue(Time::time) + " s"
     };

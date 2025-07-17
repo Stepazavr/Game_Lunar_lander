@@ -13,6 +13,7 @@ enum Difficulty {
 	Ñount    // Number of difficulty levels
 };
 
+// Parameters for each difficulty level
 struct DifficultyParams {
     double fuel;
     std::vector<int> pointsCoeff;
@@ -27,9 +28,6 @@ private:
 
 public:
     static Difficulty GetDifficulty() { return difficulty; }
-
-    // Set the difficulty
-    static void SetDifficulty(Difficulty newDifficulty) { difficulty = newDifficulty; }
 
 	// Change the difficulty to the next level
     static void ChangeDifficulty() {

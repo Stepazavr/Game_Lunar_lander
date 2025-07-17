@@ -52,10 +52,10 @@ void Rocket::Draw() {
 void Rocket::UpdateRotation(double dt) {
     double rotation = 0.0;
 
-    if (is_key_pressed(VK_LEFT)) {
+    if (is_key_pressed(VK_LEFT) || is_key_pressed('A')) {
         rotation = GameData::ROTATION_SPEED * dt;
     }
-    if (is_key_pressed(VK_RIGHT)) {
+    if (is_key_pressed(VK_RIGHT) || is_key_pressed('D')) {
         rotation = -GameData::ROTATION_SPEED * dt;
     }
     angle += rotation;

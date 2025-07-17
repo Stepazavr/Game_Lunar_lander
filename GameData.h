@@ -62,18 +62,18 @@ namespace GameData {
 	constexpr double GRAVITY = 50.0; // [pixels/^2]
 
     // Geometric parameters of the Moon surface
-	constexpr int MOON_MIN_HEIGHT_MAP = 100;  // Minimum height of the surface on the screen
-	constexpr int MOON_MAX_HEIGHT_MAP = 400;  // Maximum height of the surface on the screen
-	constexpr int MOON_MIN_HEIGHT_MOUNTAIN = 50; // Minimum height of the mountain
-	constexpr int MOON_MIN_LENGTH = 5; // Minimum length of the part of surface
-    constexpr int MOON_MAX_LENGTH = 10; // Maximum length of the part of surface
-	constexpr int MOON_MIN_HEIGHT = 5; // Minimum height of the part of surface
-    constexpr int MOON_MAX_HEIGHT = 10; // Maximum height of the part of surface
-    constexpr int MOON_SURFACE_START_POINT_X = 0; // The initial X coordinate for the Moon's surface
-    constexpr int MOON_SURFACE_FINISH_POINT_X = SCREEN_WIDTH; // The final X coordinate for the Moon's surface
+	constexpr double MOON_MIN_HEIGHT_MAP = 100.0;  // Minimum height of the surface on the screen
+	constexpr double MOON_MAX_HEIGHT_MAP = 400.0;  // Maximum height of the surface on the screen
+	constexpr double MOON_MIN_HEIGHT_MOUNTAIN = 50.0; // Minimum height of the mountain
+	constexpr double MOON_MIN_LENGTH = 5.0; // Minimum length of the part of surface
+    constexpr double MOON_MAX_LENGTH = 10.0; // Maximum length of the part of surface
+	constexpr double MOON_MIN_HEIGHT = 5.0; // Minimum height of the part of surface
+    constexpr double MOON_MAX_HEIGHT = 10.0; // Maximum height of the part of surface
+    constexpr double MOON_SURFACE_START_POINT_X = 0.0; // The initial X coordinate for the Moon's surface
+    constexpr double MOON_SURFACE_FINISH_POINT_X = SCREEN_WIDTH; // The final X coordinate for the Moon's surface
     // The length of the part of surface with the coefficient of points { x1, x2, x3 }
-    const std::vector<int> MOON_LENGTHS = { 120, 60, 40 };
-	const int MAX_ALLOWED_STRAIGHT_X = MOON_SURFACE_FINISH_POINT_X - MOON_LENGTHS[0]; // The maximum X coordinate for the straight part of the surface
+    const std::vector<double> MOON_LENGTHS = { 120.0, 60.0, 40.0 };
+	const double MAX_ALLOWED_STRAIGHT_X = MOON_SURFACE_FINISH_POINT_X - MOON_LENGTHS[0]; // The maximum X coordinate for the straight part of the surface
     
 
     // Moon color parameters
@@ -81,8 +81,8 @@ namespace GameData {
 	
 
     // Points' parametrs
-    constexpr int POINTS_INFO_MARGIN_Y = 15; // Y-indentation for information about points
-    constexpr double POINTS_SCALE = 2; // Scale of the points symbols
+    constexpr double POINTS_INFO_MARGIN_Y = 15.0; // Y-indentation for information about points
+    constexpr double POINTS_SCALE = 2.0; // Scale of the points symbols
     const std::vector<uint32_t> COLOR_POINTS = { MOON_COLOR,
                                                  Color::GREEN,
                                                  Color::DARK_ORANGE,
@@ -93,27 +93,27 @@ namespace GameData {
 
 
     // Geometric interface parameters
-    constexpr int HUD_MARGIN_Y = 30; // Y-coordinate distance between lines of text
-    constexpr int HUD_MARGIN_X = 1; // X-coordinate distance between symbols of text
-    constexpr int HUD_SCALE_COMMON = 2; // Scaling the interface
+    constexpr double HUD_MARGIN_Y = 30.0; // Y-coordinate distance between lines of text
+    constexpr double HUD_MARGIN_X = 1.0; // X-coordinate distance between symbols of text
+    constexpr double HUD_SCALE_COMMON = 2.0; // Scaling the interface
 
     // Indentation for the left block
-    constexpr int HUD_PADDING_LEFT_X = 30; 
-	constexpr int HUD_PADDING_LEFT_Y = 30;
+    constexpr double HUD_PADDING_LEFT_X = 30.0;
+	constexpr double HUD_PADDING_LEFT_Y = 30.0;
 
     // Indentation for the right block
-	constexpr int HUD_PADDING_RIGHT_X = SCREEN_WIDTH - 250;
-	constexpr int HUD_PADDING_RIGHT_Y = 30;
+	constexpr double HUD_PADDING_RIGHT_X = SCREEN_WIDTH - 250.0;
+	constexpr double HUD_PADDING_RIGHT_Y = 30.0;
 
     // Bar parameters
-    constexpr int HUD_BAR_WIDTH = 100;
-    constexpr int HUD_BAR_HEIGHT = 10;
+    constexpr double HUD_BAR_WIDTH = 100.0;
+    constexpr double HUD_BAR_HEIGHT = 10.0;
 
 	// Other interface parameters
 	constexpr double HUD_VAL_SCALE = 0.1; // the scaling factor of the values in the interface
 
 	// Pause icon parameters
-	constexpr int HUD_PAUSE_ICON_POSITION= 750; // Position for the pause icon
+	constexpr double HUD_PAUSE_ICON_POSITION= 75.00; // Position for the pause icon
 	constexpr int HUD_PAUSE_ICON_SIZE = 10; // The size of the pause icon
 
     // Interface color parameters
@@ -150,8 +150,8 @@ namespace GameData {
 
     // Difficulty Parameters
     const std::map<Difficulty, DifficultyParams> DIFFICULTY_CONFIG = {
-    { Difficulty::Easy, {120.0, {1, 2}, "Easy", Color::BLUE}},
-    { Difficulty::Medium, {60.0, {1, 2, 3}, "Medium", Color::Violet}},
+    { Difficulty::Easy, {120.0, {1, 2}, "Easy", Color::Violet}},
+    { Difficulty::Medium, {60.0, {1, 2, 3}, "Medium", Color::BLUE}},
     { Difficulty::Hard, {30.0, {2, 3}, "Hard", Color::PINK}},
     { Difficulty::Demon, {45.0, {2, 3}, "DEMON", Color::RED_2}}
     };

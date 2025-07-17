@@ -20,7 +20,7 @@ class MoonSurface {
 private:
 	static std::vector<Vector2> surfacePoints; // Points on the Moon's surface
 	static bool stopGenerate; // Flag for stopping surface generation
-	static int demonX; // X-coordinate for range of view (for the Demon difficulty level)
+	static double demonX; // X-coordinate for range of view (for the Demon difficulty level)
 
 public:
     static void Generate();
